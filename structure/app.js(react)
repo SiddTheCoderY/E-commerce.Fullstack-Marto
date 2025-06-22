@@ -1,0 +1,22 @@
+const App = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get('/api/auth/getUserDetails', { withCredentials: true });
+        dispatch(setUserData(res.data.user));
+      } catch (err) {
+        dispatch(clearUserData());
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  if (loading) return <FullScreenLoader />; // your custom loading screen
+
+  return <Routes>...</Routes>;
+};

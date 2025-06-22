@@ -227,6 +227,49 @@ export const reSendEmailForVerification = asyncHandler(async(req,res) => {
   return res.status(200).json(new ApiResponse(200, null, 'Verification email sent again'));
 })
 
-export const loginUser = asyncHandler(async(req,res) => {
+export const loginUser = asyncHandler(async (req, res) => {
+  const { username, password, email } = req.body
 
+  if (!(username || email)) throw new ApiError(400,'Email or Username is required')
+  if(!password) throw new ApiError(400,'Password is required')
+
+  const user = await User.findOne({
+    $or : [{username},{email}]
+  })
+
+  if (!user) {
+    throw new ApiError(404,'User does not exist')
+  }
+
+  const isPasswordValid = await user.isPasswordCorrect(password)
+  
+  if (!isPasswordValid) {
+    throw new ApiError(401,'Password didnt Matched')
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id)
+
+  const loggedInUser = await User.findById(user._id).select('-password -refreshToken')
+
+ // cookie settings
+    const options = {
+      httpOnly : true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+  }
+  
+  return res
+    .status(200)
+    .cookie('refreshToken', refreshToken, options)
+    .cookie('accessToken', accessToken, options)
+    .json(new ApiResponse(
+      200,
+      {
+        user: loggedInUser,
+        accessToken: accessToken,
+        refreshToken : refreshToken
+      },
+      'User Logged in Successfully'
+  ))
 })

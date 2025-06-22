@@ -66,7 +66,8 @@ export const googleOAuth = asyncHandler(async (req, res) => {
       .cookie('accessToken', accessToken, cookieOptions)
       .json(new ApiResponse(
         200,
-         {
+        {
+            user,
             accessToken : accessToken
          },
         isNewUser ? 'User Registered Successfully via Google' : 'User Logged In Successfully via Google'
