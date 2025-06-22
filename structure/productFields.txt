@@ -1,0 +1,41 @@
+Product {
+  _id: ObjectId,
+  storeId: ObjectId,        // Link to the store this product belongs to
+  sellerId: ObjectId,       // Redundant but useful for faster queries
+  name: String,
+  description: String,
+  images: [String],         // Array of image URLs
+  price: Number,
+  discount: Number,         // e.g., 10 for 10% off
+  finalPrice: Number,       // Can be precomputed or computed dynamically
+  quantity: Number,         // Available stock
+  sku: String,              // Stock Keeping Unit (unique identifier)
+  category: String,         // e.g., "Electronics"
+  subCategory: String,      // e.g., "Mobile Phones"
+  tags: [String],           // e.g., ["iPhone", "Apple", "Smartphone"]
+  status: "active" | "inactive" | "out-of-stock",
+  isFeatured: Boolean,
+  variants: [
+    {
+      color: String,
+      size: String,
+      stock: Number,
+      price: Number
+    }
+  ],
+  ratings: {
+    average: Number,
+    totalReviews: Number
+  },
+  shippingDetails: {
+    weight: Number,         // in grams
+    dimensions: {
+      length: Number,
+      width: Number,
+      height: Number
+    }
+  },
+  returnPolicy: String,
+  createdAt,
+  updatedAt
+}

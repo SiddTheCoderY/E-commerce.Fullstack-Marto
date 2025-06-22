@@ -1,0 +1,65 @@
+🧩 Common User Roles in an E-Commerce System
+
+1. 🛒 Customer (Buyer)
+Purpose: Buys products from the platform.
+
+🔑 Key Permissions:
+Register/login
+Browse/search products
+Add to cart / wishlist
+Place orders
+Make payments
+View order history
+Leave reviews/ratings
+Track deliveries
+Open support tickets
+
+2. 🧑‍💼 Seller (Vendor/Merchant)
+Purpose: Lists and sells products.
+
+🔑 Key Permissions:
+Register/login (as seller)
+Create/manage product listings
+Set prices, stock, and offers
+View orders placed on their items
+Accept/ship/cancel orders
+Manage returns/refunds
+View earnings and performance reports
+Chat with customers (if system allows)
+Run promotions/discounts
+
+3. 🛠️ Admin
+Purpose: Manages the entire platform.
+
+🔑 Key Permissions:
+Manage users (customers/sellers)
+Approve/reject new seller applications
+Add/edit/delete any product
+View all orders and transactions
+Handle disputes/refunds
+Moderate reviews/comments
+Set platform-wide policies, categories, delivery rules
+View full analytics dashboard
+Manage banners, promotions, newsletters
+
+4. 🧑‍💻 Super Admin (optional but useful)
+Purpose: Highest level access. For system owners.
+
+🔑 Extra Abilities:
+Add/remove admins
+Access server settings
+Manage payment gateways
+Database access
+System logs
+Backup and security tools
+
+5. 🤝 Optional: Delivery Agent / Logistic Role
+Purpose: Manages deliveries.
+
+🔑 Abilities:
+View assigned orders
+Update delivery status (e.g., "Shipped", "Delivered")
+Scan QR/barcode of packages
+Get delivery route/map
+Contact customer (optional)
+

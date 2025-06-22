@@ -1,0 +1,24 @@
+Store {
+  _id: ObjectId,
+  sellerId: ObjectId,       // Link to the seller (user who owns this store)
+  name: String,             // Store name
+  description: String,      // Short bio/mission
+  logoUrl: String,          // Store logo image
+  coverImageUrl: String,    // Optional: hero/banner image
+  location: String,         // City/State/Country
+  address: String,          // Full physical address (if needed)
+  contactEmail: String,
+  contactPhone: String,
+  status: "active" | "inactive" | "banned", // Store status
+  ratings: {
+    average: Number,
+    totalReviews: Number
+  },
+  socialLinks: {
+    instagram: String,
+    facebook: String,
+    website: String
+  },
+  createdAt,
+  updatedAt
+}
