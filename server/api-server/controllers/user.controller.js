@@ -126,13 +126,10 @@ export const registerUser = asyncHandler(async(req,res) => {
   `
   });
 
-
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id)
 
-  const loggedInUser = createdUser
-
-  // cookie settings
-    const cookieOptions = {
+    // cookie settings
+  const cookieOptions = {
       httpOnly : true,
       secure: true,
       sameSite: "None",
@@ -145,7 +142,7 @@ export const registerUser = asyncHandler(async(req,res) => {
     .cookie('accessToken', accessToken, cookieOptions)
     .json(new ApiResponse(
       200,
-      loggedInUser,
+      createdUser,
       'User Registered Successfully'
   ))
 })
@@ -228,4 +225,8 @@ export const reSendEmailForVerification = asyncHandler(async(req,res) => {
   });
 
   return res.status(200).json(new ApiResponse(200, null, 'Verification email sent again'));
+})
+
+export const loginUser = asyncHandler(async(req,res) => {
+
 })

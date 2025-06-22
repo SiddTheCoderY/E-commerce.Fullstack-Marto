@@ -32,8 +32,9 @@ export const googleOAuth = asyncHandler(async (req, res) => {
   if (!email) throw new ApiError(400, 'Email not found in Google token');
 
   let user = await User.findOne({ email });
-
+  let isNewUser = false;
   if (!user) {
+    isNewUser = true
     user = new User({
       email,
       fullName: name,
@@ -68,7 +69,7 @@ export const googleOAuth = asyncHandler(async (req, res) => {
          {
             accessToken : accessToken
          },
-        'User Registered Successfully via Google'
+        isNewUser ? 'User Registered Successfully via Google' : 'User Logged In Successfully via Google'
     ))
 });
 
