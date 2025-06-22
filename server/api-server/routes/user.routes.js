@@ -2,12 +2,19 @@ import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT, authorizeRoles } from "../middlewares/authorize.middleware.js";
 
-import { registerUser } from "../controllers/user.controller.js";
+import { 
+  registerUser,
+   verifyEmail,
+   reSendEmailForVerification,
+
+ } from "../controllers/user.controller.js";
 
 const router = Router()
 
 // unsecured routes
 router.route('/register-user').post(upload.single('avatar'),registerUser)
+router.get('/verify-email', verifyEmail);
+router.get('/re-send-email-for-verification',reSendEmailForVerification)
 
 //secured routes
 

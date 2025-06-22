@@ -66,6 +66,13 @@ const userSchema = new mongoose.Schema({
     },
   ],
   
+  // tokens
+  otp: {
+    type: String,
+  },
+  otpExpiry: {
+    type: Date,
+  },
   refreshToken: {
     type: String,
   }
