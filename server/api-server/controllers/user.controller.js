@@ -75,7 +75,7 @@ export const registerUser = asyncHandler(async(req,res) => {
   const loggedInUser = await User.findById(createdUser?._id).select('-password -refreshToken')
 
   // cookie settings
-    const options = {
+    const cookieOptions = {
       httpOnly : true,
       secure: true,
       sameSite: "None",
@@ -84,8 +84,8 @@ export const registerUser = asyncHandler(async(req,res) => {
 
   return res
     .status(200)
-    .cookie('refreshToken', refreshToken, options)
-    .cookie('accessToken', accessToken, options)
+    .cookie('refreshToken', refreshToken, cookieOptions)
+    .cookie('accessToken', accessToken, cookieOptions)
     .json(new ApiResponse(
       200,
       loggedInUser,

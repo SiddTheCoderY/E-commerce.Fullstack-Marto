@@ -4,13 +4,14 @@
   "description": "Backend for E-commerce Platform",
   "type": "module",
   "scripts": {
-  "dev:api": "nodemon api-server/index.js",
-  "dev:socket": "nodemon socket-server/index.js",
-  "dev": "concurrently \"npm run dev:api\" \"npm run dev:socket\""
+    "dev:api": "nodemon api-server/index.js",
+    "dev:socket": "nodemon socket-server/index.js",
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:socket\""
   },
   "author": "SiddTheCoder",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",

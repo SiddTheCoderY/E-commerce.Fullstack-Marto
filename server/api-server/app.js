@@ -18,9 +18,11 @@ app.use(cookieParser());
 // import routes
 import userRoutes from './routes/user.routes.js'
 import { verifyJWT } from "./middlewares/authorize.middleware.js";
+import OauthRoutes from './routes/Oauth.routes.js'
 
 // use routes
 app.use('/api/v1/user',userRoutes)
+app.use('/api/auth', OauthRoutes)
 
 
 // check the server - runtime

@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { generateJWTToken } from '../config/jwt.js'
 
@@ -21,7 +20,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     trim: true,
   },
-  password: {
+  password: { 
     type: String,
     required: true,
   },
