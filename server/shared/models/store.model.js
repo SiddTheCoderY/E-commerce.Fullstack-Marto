@@ -99,7 +99,7 @@ const storeSchema = new mongoose.Schema({
     },
     contactEmail: {
       type: String,
-      trim: true
+      trim: true,
     },
     contactNumber: {
       type: String
@@ -117,9 +117,10 @@ const storeSchema = new mongoose.Schema({
             ref: 'User'
         }
     ],
-    status: {
+  status: {
+       type : String,
         enum : ["active", "inactive", "banned"],
-        default : 'active'
+        default : "active"
     },
     ratings: {
         average: { type: Number, default: 0 },
@@ -129,7 +130,14 @@ const storeSchema = new mongoose.Schema({
         instagram: String,
         facebook: String,
         website: String
-    },
+  },
+  storeId: {
+    type : String
+  },
+  lastStoreNameUpdate: {
+    type: Date,
+    default: null,
+  }
     
   }, { timestamps: true });
 

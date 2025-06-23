@@ -18,11 +18,14 @@ app.use(cookieParser());
 // import routes
 import userRoutes from './routes/user.routes.js'
 import { verifyJWT } from "./middlewares/authorize.middleware.js";
-import OauthRoutes from './routes/Oauth.routes.js'
+import authRoutes from './routes/auth.routes.js'
+import storeRoutes from './routes/store.routes.js'
 
 // use routes
-app.use('/api/v1/user',userRoutes)
-app.use('/api/auth', OauthRoutes)
+app.use('/api/v1/user', userRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/v1/store', storeRoutes)
+
 
 
 // check the server - runtime
@@ -41,5 +44,4 @@ app.get("/", (req, res) => {
 
 
 
-export default app;
-
+export default app; 

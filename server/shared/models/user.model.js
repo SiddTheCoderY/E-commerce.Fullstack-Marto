@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt'
 import { generateJWTToken } from '../config/jwt.js'
+import { v4 as uuidv4 } from 'uuid'
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -41,7 +42,7 @@ const userSchema = new mongoose.Schema({
 
   role : {
     type : String,
-    enum : ['consumer','selller','admin'],
+    enum : ['consumer','seller','admin'],
     default : 'consumer'
   },
   wishListProducts : [
@@ -59,19 +60,20 @@ const userSchema = new mongoose.Schema({
       ref : 'Store'
     },
   ],
-  products : [
-    {
-      type : mongoose.Schema.Types.ObjectId,
-      ref : 'Product'
-    },
-  ],
-  
   // tokens
   otp: {
     type: String,
   },
   otpExpiry: {
     type: Date,
+  },
+  isSeller: {
+    type: Boolean,
+    default : false
+  },
+  sellerId: {
+    type: String,
+    default : null
   },
   refreshToken: {
     type: String,
@@ -119,5 +121,15 @@ userSchema.methods.generateRefreshToken = function () {
       )
 }
 
+//generate SellerId
+userSchema.methods.generateSellerId = function () {
+  if (!this.isSeller && !this.sellerId) {
+    const uniqueId = uuidv4()
+    this.sellerId = `anbari-${uniqueId}`
+    this.isSeller = true
+    return this.sellerId
+  }
+  return this.sellerId
+}
 
 export const User = mongoose.model('User', userSchema);

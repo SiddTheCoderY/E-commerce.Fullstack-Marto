@@ -4,20 +4,20 @@ import { verifyJWT, authorizeRoles } from "../middlewares/authorize.middleware.j
 
 import { 
   registerUser,
-  verifyEmail,
-  reSendEmailForEmailVerification,
   loginUser,
-  refreshAccessToken,
-   
+  logoutUser,
+  promoteUserToSeller,
  } from "../controllers/user.controller.js";
 
 const router = Router()
 
 // unsecured routes
 router.route('/register-user').post(upload.single('avatar'),registerUser) // /api/v1/user/...
-router.post('/login-user',loginUser)
+router.route('/login-user').post(loginUser)
 
 //secured routes
+router.route('/logout-user').post(verifyJWT, logoutUser)
+router.route('/promote-user-to-seller').post(verifyJWT, authorizeRoles('consumer'), promoteUserToSeller)
 
 
 

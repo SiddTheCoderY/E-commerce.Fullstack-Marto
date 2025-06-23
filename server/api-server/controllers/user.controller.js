@@ -147,7 +147,6 @@ export const registerUser = asyncHandler(async(req,res) => {
   ))
 })
 
-
 export const loginUser = asyncHandler(async (req, res) => {
   const { username, password, email } = req.body
 
@@ -221,4 +220,69 @@ export const logoutUser = asyncHandler(async (req, res) => {
       {},
       'User Logout Successfully'
   ))
+})
+
+export const promoteUserToSeller = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user?._id)
+
+  if (!user) {
+    throw new ApiError(400, 'User Not Found for promotion to seller')
+  }
+
+  user.role = 'seller' 
+  user.generateSellerId() // this method sets sellerId + isSeller
+  await user.save()
+
+    // 🔗 sending mail to greet user 
+    await sendMail({
+      to: user.email,
+      subject: 'Welcome to Anbari Marketplace — You’re Now a Seller!',
+      html: `
+      <div style="max-width:600px;margin:auto;font-family:'Segoe UI',sans-serif;background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
+        <!-- Header with gradient, logo -->
+        <div style="background:linear-gradient(135deg,#7C3AED,#3B82F6);padding:20px;text-align:center;color:white;">
+          <h1 style="margin:0;">You're Officially a Seller on Anbari!</h1>
+        </div>
+    
+        <!-- Illustration -->
+        <div style="text-align:center;padding:20px 0;">
+          <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Welcome Seller" width="150" style="opacity:0.9;" />
+        </div>
+    
+        <!-- Body content -->
+        <div style="padding:30px;text-align:center;">
+          <p style="font-size:16px;color:#4B5563;">Hello <strong>${user.fullName}</strong>,</p>
+          <p style="font-size:15px;color:#6B7280;">Congratulations on becoming a seller on <strong>Anbari</strong>! 🎉</p>
+          <p style="font-size:15px;color:#6B7280;">You’ve unlocked access to seller tools, product listings, and a growing customer base.</p>
+          <p style="margin: 20px 0; font-size:16px; color:#10B981;"><strong>Your Seller ID:</strong> ${user.sellerId}</p>
+          <a href="https://anbari.com/seller/dashboard" style="display:inline-block;margin-top:20px;background:#3B82F6;color:white;padding:12px 25px;text-decoration:none;border-radius:6px;font-weight:bold;">Go to Seller Dashboard</a>
+          <p style="font-size:13px;color:#9CA3AF;margin-top:30px;">Need help getting started? Our seller support team is just one message away.</p>
+        </div>
+    
+        <!-- Footer with social links -->
+        <div style="background:#F9FAFB;padding:20px;text-align:center;font-size:14px;color:#6B7280;">
+          <p style="margin-bottom:10px;">Connect with us:</p>
+          <a href="https://facebook.com/siddthecoder" style="margin: 0 8px;" target="_blank" rel="noopener noreferrer">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" width="24" />
+          </a>
+          <a href="https://instagram.com/siddhant_.ydv" style="margin: 0 8px;" target="_blank" rel="noopener noreferrer">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733558.png" alt="Instagram" width="24" />
+          </a>
+          <a href="https://github.com/siddthecoder" style="margin: 0 8px;" target="_blank" rel="noopener noreferrer">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733553.png" alt="GitHub" width="24" />
+          </a>
+          <a href="https://linkedin.com/in/siddthecoder" style="margin: 0 8px;" target="_blank" rel="noopener noreferrer">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733561.png" alt="LinkedIn" width="24" />
+          </a>
+          <p style="margin-top:15px;font-size:12px;color:#9CA3AF;">&copy; ${new Date().getFullYear()} Anbari. All rights reserved.</p>
+        </div>
+      </div>
+      `
+    })
+    
+
+  return res.status(200).json(
+    new ApiResponse(200, user, 'User Promoted to Seller')
+  )
+
 })
