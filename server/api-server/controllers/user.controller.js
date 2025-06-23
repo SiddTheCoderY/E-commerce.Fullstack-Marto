@@ -147,85 +147,6 @@ export const registerUser = asyncHandler(async(req,res) => {
   ))
 })
 
-export const verifyEmail = asyncHandler(async (req, res) => {
-  const { email, otp } = req.query;
-
-  const user = await User.findOne({ email });
-
-  if (!user) throw new ApiError(404, 'User not found');
-  if (user.verified) throw new ApiError(400, 'User already verified');
-  if (user.otp !== otp || user.otpExpiry < Date.now()) {
-    throw new ApiError(400, 'Invalid or expired OTP');
-  }
-
-  user.verified = true;
-  user.otp = undefined;
-  user.otpExpiry = undefined;
-  await user.save();
-
-  res.status(200).json(new ApiResponse(200, null, 'Email verified successfully'));
-});
-
-export const reSendEmailForVerification = asyncHandler(async(req,res) => {
-  
-  const user = await User.findById(req.user?._id)
-  // for email sending
-  const otp = crypto.randomInt(100000, 999999).toString(); // 6-digit OTP
-  const otpExpiry = new Date(Date.now() + 15 * 60 * 1000); // expires in 15 minutes
-
-  user.otp = otp;
-  user.otpExpiry = otpExpiry;
-  await user.save();
-
-  // 🔗 Create verification link and send mail
-  const verificationLink = `${process.env.FRONTEND_URL}/verify-email?email=${user.email}&otp=${otp}`;
-  await sendMail({
-  to: user.email,
-  subject: 'Verify your Email - Anbari',
-  html: `
-  <div style="max-width:600px;margin:auto;font-family:'Segoe UI',sans-serif;background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
-    <!-- Header with gradient, logo -->
-    <div style="background:linear-gradient(135deg,#7C3AED,#3B82F6);padding:20px;text-align:center;color:white;">
-      <h1 style="margin:0;">Verify Your Email</h1>
-    </div>
-
-    <!-- Illustration -->
-    <div style="text-align:center;padding:20px 0;">
-      <img src="https://cdn-icons-png.flaticon.com/512/270/270798.png" alt="Email Verification Illustration" width="150" style="opacity:0.8;" />
-    </div>
-
-    <!-- Body content -->
-    <div style="padding:30px;text-align:center;">
-      <p style="font-size:16px;color:#4B5563;">Hello <strong>${user.fullName}</strong>,</p>
-      <p style="font-size:15px;color:#6B7280;">Use the OTP below to verify your email address or click the button to verify directly.</p>
-      <h2 style="margin:20px auto;font-size:28px;color:#7C3AED;background:#F3F4F6;padding:10px 20px;display:inline-block;border-radius:8px;">${otp}</h2>
-      <a href="${verificationLink}" style="display:inline-block;margin-top:20px;background:#3B82F6;color:white;padding:12px 25px;text-decoration:none;border-radius:6px;font-weight:bold;">Verify Email</a>
-      <p style="font-size:13px;color:#9CA3AF;margin-top:30px;">This OTP/link expires in 15 minutes. If you didn't request this, please ignore.</p>
-    </div>
-
-    <!-- Footer with social links -->
-    <div style="background:#F9FAFB;padding:20px;text-align:center;font-size:14px;color:#6B7280;">
-      <p style="margin-bottom:10px;">Connect with us:</p>
-      <a href="https://facebook.com/siddthecoder" style="margin: 0 8px; display:inline-block;" target="_blank" rel="noopener noreferrer">
-        <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" width="24" />
-      </a>
-      <a href="https://instagram.com/siddhant_.ydv" style="margin: 0 8px; display:inline-block;" target="_blank" rel="noopener noreferrer">
-        <img src="https://cdn-icons-png.flaticon.com/512/733/733558.png" alt="Instagram" width="24" />
-      </a>
-      <a href="https://github.com/siddthecoder" style="margin: 0 8px; display:inline-block;" target="_blank" rel="noopener noreferrer">
-        <img src="https://cdn-icons-png.flaticon.com/512/733/733553.png" alt="GitHub" width="24" />
-      </a>
-      <a href="https://linkedin.com/in/siddthecoder" style="margin: 0 8px; display:inline-block;" target="_blank" rel="noopener noreferrer">
-        <img src="https://cdn-icons-png.flaticon.com/512/733/733561.png" alt="LinkedIn" width="24" />
-      </a>
-      <p style="margin-top:15px;font-size:12px;color:#9CA3AF;">&copy; ${new Date().getFullYear()} Anbari. All rights reserved.</p>
-    </div>
-  </div>
-  `
-  });
-
-  return res.status(200).json(new ApiResponse(200, null, 'Verification email sent again'));
-})
 
 export const loginUser = asyncHandler(async (req, res) => {
   const { username, password, email } = req.body
@@ -271,5 +192,33 @@ export const loginUser = asyncHandler(async (req, res) => {
         refreshToken : refreshToken
       },
       'User Logged in Successfully'
+  ))
+})
+
+export const logoutUser = asyncHandler(async (req, res) => {
+  await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set : { refreshToken : undefined }
+    },
+    { new : true}
+  )
+  
+  // cookie settings
+  const options = {
+    httpOnly : true,
+    secure: true,
+    sameSite: "None",
+    maxAge: 7 * 24 * 60 * 60 * 1000 
+}
+
+  return res
+    .status(200)
+    .clearCookie('accessToken',options)
+    .clearCookie('refreshToken', options)
+    .json(new ApiResponse(
+      200,
+      {},
+      'User Logout Successfully'
   ))
 })

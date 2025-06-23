@@ -4,18 +4,17 @@ import { verifyJWT, authorizeRoles } from "../middlewares/authorize.middleware.j
 
 import { 
   registerUser,
-   verifyEmail,
-   reSendEmailForVerification,
-   loginUser,
-
+  verifyEmail,
+  reSendEmailForEmailVerification,
+  loginUser,
+  refreshAccessToken,
+   
  } from "../controllers/user.controller.js";
 
 const router = Router()
 
 // unsecured routes
-router.route('/register-user').post(upload.single('avatar'),registerUser)
-router.get('/verify-email', verifyEmail);
-router.get('/re-send-email-for-verification', reSendEmailForVerification)
+router.route('/register-user').post(upload.single('avatar'),registerUser) // /api/v1/user/...
 router.post('/login-user',loginUser)
 
 //secured routes
@@ -30,6 +29,7 @@ router.route('/verify-user').get(verifyJWT, (req, res) => {
       isAuthenticated: true
     })
 })
+
 
 
 export default router  
