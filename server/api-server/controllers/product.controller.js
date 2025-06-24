@@ -181,3 +181,4 @@ export const rateTheProduct = asyncHandler(async (req, res) => {
     new ApiResponse(200, product, 'Product rating submitted successfully')
   );
 });
+
