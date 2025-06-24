@@ -4,7 +4,8 @@ import { authorizeRoles, verifyJWT } from "../middlewares/authorize.middleware.j
 
 import {
   createProduct,
-  updateProductCredentials
+  updateProductCredentials,
+  rateTheProduct,
 } from '../controllers/product.controller.js'
 
 const router = Router()
@@ -21,8 +22,11 @@ router.route('/update-product-credentials').post(
   upload.array('images',5),
   verifyJWT,
   authorizeRoles('seller'),
-  updateStoreCredentials
+  updateProductCredentials
 )
+
+router.route('/rate-the-product').post(verifyJWT,authorizeRoles('consumer'),rateTheProduct)
+
 
 
 export default router
