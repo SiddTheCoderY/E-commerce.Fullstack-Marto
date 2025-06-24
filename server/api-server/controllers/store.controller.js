@@ -143,3 +143,11 @@ export const updateStoreCredentials = asyncHandler(async (req, res) => {
   );
 
 })
+
+export const likeTheStore = asyncHandler(async (req, res) => {
+  
+})
+
+export const getAllStore = asyncHandler(async (req, res) => {
+  
+})

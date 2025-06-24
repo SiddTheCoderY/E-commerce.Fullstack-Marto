@@ -182,3 +182,30 @@ export const rateTheProduct = asyncHandler(async (req, res) => {
   );
 });
 
+// fetching the products in diff way -->
+
+export const getProductsByStore = asyncHandler(async (req, res) => {
+  const { storeId } = req.query;
+
+  if (!storeId) {
+    throw new ApiError(400, 'Store ID is required');
+  }
+
+  const products = await Product.find({ store: storeId });
+
+  if (products.length === 0) {
+    return res.status(200).json(
+      new ApiResponse(200, [], 'No products found in this store')
+    );
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, products, 'Products fetched successfully')
+  );
+});
+
+export const getAllProducts = asyncHandler(async (req, res) => {
+  // concept of navigation apply.. , isFeatured ()-->
+})
+
+export const getProductsByCategory = asyncHandler(async (req, res) => {})

@@ -111,7 +111,7 @@ const storeSchema = new mongoose.Schema({
       type: Boolean,
       default: true
     },
-    ratingUsers : [
+    likes : [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
@@ -121,10 +121,6 @@ const storeSchema = new mongoose.Schema({
        type : String,
         enum : ["active", "inactive", "banned"],
         default : "active"
-    },
-    ratings: {
-        average: { type: Number, default: 0 },
-        count: { type: Number, default: 0 }
     },
     socialLinks: {
         instagram: String,
