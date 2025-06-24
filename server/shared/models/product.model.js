@@ -35,19 +35,48 @@ const productSchema = new mongoose.Schema({
       required: true,
       min: 0
     },
+    ratingData: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          required: true
+        },
+        ratingValue: {
+          type: Number,
+          required: true,
+          min: 1,
+          max: 5
+        },
+        review: {
+          type: String,
+          default: ""
+        },
+        ratedAt: {
+          type: Date,
+          default: Date.now
+        }
+      }
+    ],
     ratings: {
-      average: { type: Number, default: 0 },
-      count: { type: Number, default: 0 }
+      average: {
+        type: Number,
+        default: 0
+      },
+      count: {
+        type: Number,
+        default: 0
+      }
     },
     isFeatured: {
       type: Boolean,
       default: false
-  },
-  features: {
-    type: [String], // Array of strings
-    //  "features": ["Bluetooth 5.0", "Noise Cancellation", "20-Hour Battery", "Water Resistant"]
-    default: []     // Optional: start with empty array
-  }
+    },
+    features: {
+      type: [String], // Array of strings
+      //  "features": ["Bluetooth 5.0", "Noise Cancellation", "20-Hour Battery", "Water Resistant"]
+      default: []     // Optional: start with empty array
+    }
   }, { timestamps: true });
 
 export const Product = mongoose.model('products',productSchema)  

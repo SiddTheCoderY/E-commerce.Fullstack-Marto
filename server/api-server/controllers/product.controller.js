@@ -25,7 +25,7 @@ export const createProduct = asyncHandler(async (req, res) => {
   }
 
   // handling file
-  const pictures = req.files?.pictures
+  const pictures = req.files?.images
   console.log(pictures)
   const imagesUrls = []
 
@@ -76,7 +76,7 @@ export const updateProductCredentials = asyncHandler(async (req, res) => {
     throw new ApiError(400,'Product ID is required')
   }
 
-  const picturesExist = req.files?.pictures?.length > 0
+  const picturesExist = req.files?.images?.length > 0
 
   const hasUpdateFields =
   "title" in req.body ||
@@ -93,7 +93,7 @@ export const updateProductCredentials = asyncHandler(async (req, res) => {
     throw new ApiError(400,'At least one field is required');
   }
 
-  const picturesLocalPath = req.files?.pictures
+  const picturesLocalPath = req.files?.images
   const imagesUrls = []
 
   if (picturesLocalPath) {
@@ -129,3 +129,55 @@ export const updateProductCredentials = asyncHandler(async (req, res) => {
     new ApiResponse(200,product,'Product Credentials Updated Successfully')
   )
 })
+
+export const rateTheProduct = asyncHandler(async (req, res) => {
+  const { productId } = req.query;
+  const { ratingValue, review } = req.body;
+
+  if (!productId) {
+    throw new ApiError(400, 'Product ID is required');
+  }
+
+  if (!ratingValue || ratingValue < 1 || ratingValue > 5) {
+    throw new ApiError(400, 'Rating value must be between 1 and 5');
+  }
+
+  const product = await Product.findById(productId);
+  if (!product) {
+    throw new ApiError(404, 'No product found with the provided ID');
+  }
+
+  // Check if user already rated
+  const existingRatingIndex = product.ratingData.findIndex(
+    (entry) => entry.user.toString() === req.user._id.toString()
+  );
+
+  if (existingRatingIndex !== -1) {
+    // Update existing rating
+    product.ratingData[existingRatingIndex].ratingValue = ratingValue;
+    product.ratingData[existingRatingIndex].review = review || "";
+    product.ratingData[existingRatingIndex].ratedAt = new Date();
+  } else {
+    // Add new rating
+    product.ratingData.push({
+      user: req.user._id,
+      ratingValue,
+      review: review || "",
+      ratedAt: new Date()
+    });
+  }
+
+  // Recalculate average rating and count
+  const totalRatings = product.ratingData.length;
+  const averageRating =
+    product.ratingData.reduce((sum, r) => sum + r.ratingValue, 0) / totalRatings;
+
+  product.ratings.count = totalRatings;
+  product.ratings.average = parseFloat(averageRating.toFixed(1));
+
+  await product.save();
+
+  return res.status(200).json(
+    new ApiResponse(200, product, 'Product rating submitted successfully')
+  );
+});

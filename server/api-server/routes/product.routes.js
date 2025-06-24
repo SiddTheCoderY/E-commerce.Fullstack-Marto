@@ -4,23 +4,21 @@ import { authorizeRoles, verifyJWT } from "../middlewares/authorize.middleware.j
 
 import {
   createProduct,
+  updateProductCredentials
 } from '../controllers/product.controller.js'
 
 const router = Router()
 
 
 router.route('/create-product').post(
-  upload.array('pictures',5),
+  upload.array('images',5),
   verifyJWT,
   authorizeRoles('seller'),
   createProduct
 )
 
 router.route('/update-product-credentials').post(
-  upload.fields([
-    { name: "logo", maxCount: 1 },
-    { name: "banner", maxCount: 1 }
-  ]),
+  upload.array('images',5),
   verifyJWT,
   authorizeRoles('seller'),
   updateStoreCredentials
