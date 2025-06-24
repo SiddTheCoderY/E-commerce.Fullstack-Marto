@@ -42,7 +42,12 @@ const productSchema = new mongoose.Schema({
     isFeatured: {
       type: Boolean,
       default: false
-    }
+  },
+  features: {
+    type: [String], // Array of strings
+    //  "features": ["Bluetooth 5.0", "Noise Cancellation", "20-Hour Battery", "Water Resistant"]
+    default: []     // Optional: start with empty array
+  }
   }, { timestamps: true });
 
 export const Product = mongoose.model('products',productSchema)  

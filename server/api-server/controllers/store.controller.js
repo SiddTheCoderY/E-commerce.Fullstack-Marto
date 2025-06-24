@@ -72,8 +72,11 @@ export const createStore = asyncHandler(async (req, res) => {
 export const updateStoreCredentials = asyncHandler(async (req, res) => {
   const { storeName, description, contactEmail, contactNumber, address, socialLinks } = req.body
   const { storeId } = req.query
+
+  const logoFileExists = req.files?.logo?.length > 0;
+  const bannerFileExists = req.files?.banner?.length > 0;
   
-  if (!(description || contactEmail || contactNumber || address || socialLinks || storeName )) {
+  if (!(description || contactEmail || contactNumber || address || socialLinks || storeName || logoFileExists || bannerFileExists )) {
     throw new ApiError(400,'Atleast one field is required to update credentials')
   }
 

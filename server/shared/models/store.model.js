@@ -137,7 +137,13 @@ const storeSchema = new mongoose.Schema({
   lastStoreNameUpdate: {
     type: Date,
     default: null,
-  }
+  },
+  products: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref : 'Product'
+    }
+  ]
     
   }, { timestamps: true });
 
