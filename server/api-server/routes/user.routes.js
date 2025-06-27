@@ -7,6 +7,7 @@ import {
   loginUser,
   logoutUser,
   promoteUserToSeller,
+  getCurrentUser
  } from "../controllers/user.controller.js";
 
 const router = Router()
@@ -18,6 +19,7 @@ router.route('/login-user').post(loginUser)
 //secured routes
 router.route('/logout-user').post(verifyJWT, logoutUser)
 router.route('/promote-user-to-seller').post(verifyJWT, authorizeRoles('consumer'), promoteUserToSeller)
+router.route('/get-current-user').get(verifyJWT,getCurrentUser)
 
 
 

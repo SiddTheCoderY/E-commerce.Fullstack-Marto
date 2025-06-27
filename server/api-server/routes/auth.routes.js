@@ -10,6 +10,6 @@ router.get('/re-send-email-for-verification', reSendEmailForEmailVerification)
 
 
 // OAuth ------
-router.post('/google', googleOAuth); // POST /api/auth/google
+router.post('/google-auth', googleOAuth); // POST /api/auth/google
 
 export default router;

@@ -23,7 +23,7 @@ import storeRoutes from './routes/store.routes.js'
 
 // use routes
 app.use('/api/v1/user', userRoutes)
-app.use('/api/auth', authRoutes)
+app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/store', storeRoutes)
 
 
