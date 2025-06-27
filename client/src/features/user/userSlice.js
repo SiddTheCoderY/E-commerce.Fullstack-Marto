@@ -24,6 +24,9 @@ const userSlice = createSlice({
     },
     setError: (state, action) => {
       state.error = action.payload;
+      setTimeout(() => {
+        state.error = null
+      }, 4000);
     },
     }
 })

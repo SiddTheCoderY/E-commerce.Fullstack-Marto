@@ -23,19 +23,19 @@ export const registerUser = createAsyncThunk(
   }
 )
 
-export const googleLogin = createAsyncThunk(
+// this will login the user (if user sxist), or create a account (if user didnt exist)
+export const googleLoginRegister = createAsyncThunk(
   'auth/googleLogin',
   async ({ code }, { dispatch, rejectWithValue }) => {
     try {
       dispatch(setLoading(true));
 
       const response = await axiosInstance.post('/auth/google-auth', { code });
-      console.log('Data fetchec while logging from google', response)
+      console.log('Data fetchec while logging from google', response.data.data.user)
       dispatch(setUser(response.data.data.user));
       return response.data.data;
     } catch (error) {
       console.log('Error occured while logging from google', error)
-      dispatch(setError(error.response?.data?.message || 'Google login failed'));
       return rejectWithValue(error.response?.data || error.message);
     } finally {
       dispatch(setLoading(false));
@@ -43,7 +43,6 @@ export const googleLogin = createAsyncThunk(
   }
 );
 
-export const googleRegister = createAsyncThunk()
 
 export const loginUser = createAsyncThunk(
   'auth/loginUser',

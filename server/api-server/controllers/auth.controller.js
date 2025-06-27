@@ -143,7 +143,7 @@ export const googleOAuth = asyncHandler(async (req, res) => {
 
   if (!email) throw new ApiError(400, 'Email not found in Google token');
 
-  let user = await User.findOne({ email });
+  let user = await User.findOne({ email }).select('-password -refreshToken');
   let isNewUser = false;
   if (!user) {
     isNewUser = true

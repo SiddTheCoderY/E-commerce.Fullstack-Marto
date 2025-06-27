@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { googleLogin } from '../../features/auth/authThunks';
+import { googleLoginRegister } from '../../features/auth/authThunks';
 
 const GoogleCallback = () => {
   const dispatch = useDispatch();
@@ -12,7 +12,7 @@ const GoogleCallback = () => {
     const code = urlParams.get('code');
 
     if (code) {
-      dispatch(googleLogin({ code })).then(() => {
+      dispatch(googleLoginRegister({ code })).then(() => {
         navigate('/');
       });
     } else {

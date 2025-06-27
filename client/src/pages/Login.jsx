@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Lock, Eye, EyeOff, ChevronLeft } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser, googleLogin } from '../features/auth/authThunks'; // ✅ googleLogin thunk
+import { loginUser } from '../features/auth/authThunks'; 
 import { useNavigate } from 'react-router-dom';
 
 function Login() {

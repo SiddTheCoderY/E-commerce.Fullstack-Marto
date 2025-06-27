@@ -16,8 +16,6 @@ import GoogleCallback from './pages/Oauth-pages/GoogleCallback'
 function App() {
   const dispatch = useDispatch()
   const {loading,user} = useSelector((state) => state.user)
-  const redoxState = useSelector((state) => state)
-  console.log('All state redox',redoxState)
   
   React.useEffect(() => {
     dispatch(getCurrentUser())

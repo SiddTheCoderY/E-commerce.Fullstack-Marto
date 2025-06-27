@@ -1,5 +1,6 @@
 import React from 'react'
 import Header from '../components/Header'
+import Sidebar from '../components/Sidebar'
 import { useSelector } from 'react-redux'
 
 function Home() {
@@ -11,8 +12,14 @@ function Home() {
   )
   return (
     <>
-    <Header />
-    <h1>Home</h1>
+     <div className='w-screen h-screen flex flex-row'>
+       <div className='h-full'>
+        <Sidebar />
+       </div>
+       <div className='w-full h-full'>
+        <Header />
+       </div>
+     </div>
     </>
   )
 }
