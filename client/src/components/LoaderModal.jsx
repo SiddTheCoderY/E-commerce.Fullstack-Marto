@@ -1,23 +1,14 @@
 import React from 'react';
-import { TypeAnimation } from 'react-type-animation';
+import Lottie from 'lottie-react';
+import CompanyLogo from '../assets/animated-logo-cart.json'
 
 function LoaderModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
-      <div className="bg-white rounded-xl shadow-xl p-6 w-[90%] max-w-md flex flex-col items-center gap-4">
-        
-        {/* Spinner Box (replace with your image later) */}
-        <div className="w-16 h-16 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin" />
+      <div className="bg-white rounded-xl shadow-xl p-6 w-[10%] max-w-md flex flex-col items-center gap-4">
 
-        {/* Message */}
-        <p className="text-center text-gray-800 font-medium">
-          Building the instances for you 
-          <TypeAnimation
-            sequence={['....', 1000]}
-            speed={50}
-            repeat={Infinity}
-          />
-        </p>
+      <Lottie animationData={CompanyLogo} loop={true} className='w-18 h-18'/>        
+
       </div>
     </div>
   )

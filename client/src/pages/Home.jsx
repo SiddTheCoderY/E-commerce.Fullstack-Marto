@@ -4,7 +4,7 @@ import Sidebar from '../components/Sidebar'
 import { useSelector } from 'react-redux'
 
 function Home() {
-  const {loading,user} = useSelector((state) => state.user)
+  const {loading} = useSelector((state) => state.user)
   if(loading) return (
     <>
     <h1>At home screen</h1>
@@ -12,13 +12,8 @@ function Home() {
   )
   return (
     <>
-     <div className='w-screen h-screen flex flex-row'>
-       <div className='h-full'>
-        <Sidebar />
-       </div>
-       <div className='w-full h-full'>
-        <Header />
-       </div>
+     <div className='w-full h-full'>
+      <Header />
      </div>
     </>
   )
