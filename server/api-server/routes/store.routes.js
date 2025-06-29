@@ -5,7 +5,8 @@ import { authorizeRoles, verifyJWT } from "../middlewares/authorize.middleware.j
 import {
   createStore,
   updateStoreCredentials,
-  getAllStore
+  getAllStore,
+  checkStoreName
 } from '../controllers/store.controller.js'
 
 
@@ -32,7 +33,9 @@ router.route('/update-store-credentials').post(
   updateStoreCredentials
 )
 
-router.route('/get-all-stores').get(verifyJWT,getAllStore)
+router.route('/get-all-stores').get(verifyJWT, getAllStore)
+
+router.route('/check-store-name-availablity').post(checkStoreName)
 
 
 export default router

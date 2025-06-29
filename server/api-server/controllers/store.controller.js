@@ -69,6 +69,28 @@ export const createStore = asyncHandler(async (req, res) => {
   )
 })
 
+export const checkStoreName = asyncHandler(async (req, res) => {
+  const { storeName } = req.body
+  if (!storeName) {
+    throw new ApiError(400,'Store Name is required')
+  }
+  const doStoreExist = await Store.findOne({ storeName: storeName })
+
+  if (doStoreExist) {
+    return res.status(200).json(
+      new ApiResponse(200, {
+        isNameAvailable: false,
+        checkedFor : storeName
+      },'Store name is not available.')
+    )
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200,{isNameAvailable : true,checkedFor : storeName},'Store name is available.')
+  )
+
+})
+
 export const updateStoreCredentials = asyncHandler(async (req, res) => {
   const { storeName, description, contactEmail, contactNumber, address, socialLinks } = req.body
   const { storeId } = req.query
