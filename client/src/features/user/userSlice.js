@@ -4,7 +4,8 @@ const initialState = {
     user : null,
     loading : false,
     error : null,
-    isAuthenticated : false,
+    isAuthenticated: false,
+    isUserChecked : false,
 }
 
 const userSlice = createSlice({
@@ -27,10 +28,13 @@ const userSlice = createSlice({
       setTimeout(() => {
         state.error = null
       }, 4000);
-    },
+      },
+      setUserChecked: (state, action) => {
+        state.isUserChecked = true;
+      },
     }
 })
 
-export const {setUser,setLoading,setError,clearUser} = userSlice.actions
+export const {setUser,setLoading,setError,clearUser,setUserChecked} = userSlice.actions
 
 export default userSlice.reducer

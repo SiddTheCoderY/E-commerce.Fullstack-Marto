@@ -18,18 +18,19 @@ import Store from './pages/Store';
 
 function App() {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.user);
+  const { isUserChecked } = useSelector((state) => state.user);
 
   React.useEffect(() => {
     dispatch(getCurrentUser());
   }, [dispatch]);
 
-  if (loading) return <LoaderModal />;
+  if (!isUserChecked) return <LoaderModal />;
 
   return (
     <Router>
       <Routes>
         {/* Public Routes */}
+       
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/oauth/google/callback" element={<GoogleCallback />} />

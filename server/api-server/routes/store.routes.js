@@ -5,6 +5,7 @@ import { authorizeRoles, verifyJWT } from "../middlewares/authorize.middleware.j
 import {
   createStore,
   updateStoreCredentials,
+  getAllStore
 } from '../controllers/store.controller.js'
 
 
@@ -30,6 +31,8 @@ router.route('/update-store-credentials').post(
   authorizeRoles('seller'),
   updateStoreCredentials
 )
+
+router.route('/get-all-stores').get(verifyJWT,getAllStore)
 
 
 export default router

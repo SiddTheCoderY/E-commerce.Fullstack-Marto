@@ -48,7 +48,7 @@ export const createStore = asyncHandler(async (req, res) => {
   const store = await Store.create({
     owner: req.user?._id,
     storeName,
-    description : description ? description : `Find all your need here at ${storeName}`,
+    description: description?.trim() || `Find all your needs here at ${storeName}`,
     logo : logoUrl,
     banner : bannerUrl,
     category,
@@ -175,5 +175,15 @@ export const toggleTheStoreLike = asyncHandler(async (req, res) => {
 
 
 export const getAllStore = asyncHandler(async (req, res) => {
-  
+  const stores = await Store.find({ owner: req.user._id })
+  const storeArray = Array.isArray(stores) ? stores : [stores]
+  if (storeArray.length === 0) {
+    return res.status(200).json(
+      new ApiResponse(200,[],'No store created yet')
+    )
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200,storeArray,'Store fetched successfully')
+  )
 })
