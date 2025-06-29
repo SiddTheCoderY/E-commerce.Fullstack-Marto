@@ -3,3 +3,19 @@
 .input {
   @apply pr-3 pl-7 py-2 border rounded-md  outline-none focus:ring-1 focus:ring-blue-300 text-sm w-56 lg:w-76 ;
 }
+
+.highlight-tilt {
+  position: relative;
+  z-index: 1;
+}
+
+
+.highlight-tilt::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgb(0, 98, 255); 
+  transform: skewY(-3deg);
+  z-index: -1;
+  border-radius: 5px;
+}

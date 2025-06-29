@@ -45,13 +45,13 @@ export const createStore = createAsyncThunk(
 
       const response = await axiosInstance.post('/store/create-store', storeData);
       const createdStore = response.data.data;
-
       const { stores } = getState().store; // ✅ Correct way to access current store state
-
+      
       const newStores = [...stores, createdStore];
       dispatch(setStores(newStores));
       dispatch(setCurrentStore(createdStore));
       localStorage.setItem('selectedStoreId', createdStore._id); 
+      console.log(response.data.data)
 
       return createdStore;
     } catch (error) {

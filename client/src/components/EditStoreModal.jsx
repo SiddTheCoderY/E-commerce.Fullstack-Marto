@@ -77,7 +77,7 @@ function EditStoreModal({ action, onClose }) {
               </label>
             </div>
 
-            {/* Files - banner */}
+            {/* Files logo - banner */}
             <div className='w-full flex flex-wrap sm:flex-nowrap gap-4'>
               <label className='sm:w-56 w-26 cursor-pointer relative h-20 sm:h-44 rounded- overflow-hidden' htmlFor="logo">
                 <Camera className='h-18 w-18 p-4 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2' />

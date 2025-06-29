@@ -49,15 +49,15 @@ export const createStore = asyncHandler(async (req, res) => {
     owner: req.user?._id,
     storeName,
     description: description?.trim() || `Find all your needs here at ${storeName}`,
-    logo : logoUrl,
-    banner : bannerUrl,
+    logo: logoUrl || null,
+    banner: bannerUrl || null,
     category,
     contactEmail,
     contactNumber,
     address,
-    socialLinks : socialLinks ? socialLinks : null,
-    storeId
-  })
+    socialLinks: socialLinks || null,
+    storeId,
+  });
 
   await User.findByIdAndUpdate(req.user._id, {
     $push: { stores: store._id }
