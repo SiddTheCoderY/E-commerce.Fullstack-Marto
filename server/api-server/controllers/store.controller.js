@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { uploadOnCloudinary } from "../utils/Cloudinary.js";
 import { User } from "../../shared/models/user.model.js";
 import dayjs from 'dayjs'
+import sendMail from "../utils/sendMail.js";
 
 
 export const createStore = asyncHandler(async (req, res) => {
@@ -63,6 +64,68 @@ export const createStore = asyncHandler(async (req, res) => {
     $push: { stores: store._id }
   });
 
+  await sendMail({
+    to: req.user?.email,
+    subject: '🎉 Congratulations! Your Store is Live on Anbari!',
+    html: `
+      <div style="max-width:600px;margin:auto;font-family:'Segoe UI',sans-serif;background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#7C3AED,#3B82F6);padding:20px;text-align:center;color:white;">
+          <h1 style="margin:0;">Welcome to the Anbari Seller Family!</h1>
+        </div>
+  
+        <!-- Illustration -->
+        <div style="text-align:center;padding:20px 0;">
+          <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Welcome Seller" width="150" style="opacity:0.9;" />
+        </div>
+  
+        <!-- Body content -->
+        <div style="padding:30px;text-align:center;">
+          <p style="font-size:16px;color:#4B5563;">Hi <strong>${req.user?.fullName}</strong>,</p>
+          <p style="font-size:15px;color:#6B7280;">Congratulations on successfully creating your store <strong>${storeName}</strong> on <strong>Anbari</strong>! 🎉</p>
+          <p style="font-size:15px;color:#6B7280;">You’ve taken your first step towards reaching thousands of customers and building your brand with us.</p>
+  
+          ${
+            store.description
+              ? `<p style="font-size:14px;color:#6B7280;"><em>"${store.description}"</em></p>`
+              : ''
+          }
+  
+          <p style="margin: 20px 0; font-size:16px; color:#10B981;"><strong>Your Store ID:</strong> ${store.storeId}</p>
+  
+          <a href="https://anbari.com/seller/dashboard" style="display:inline-block;margin-top:20px;background:#3B82F6;color:white;padding:12px 25px;text-decoration:none;border-radius:6px;font-weight:bold;">Visit Your Dashboard</a>
+  
+          <p style="font-size:13px;color:#9CA3AF;margin-top:30px;">From tracking orders to adding products and promotions, your dashboard has all the tools you need to thrive.</p>
+        </div>
+  
+        <!-- Motivation & support -->
+        <div style="padding:0 30px 30px;text-align:center;">
+          <p style="font-size:14px;color:#6B7280;">Need help getting started? We’re here to support you every step of the way.</p>
+          <p style="font-size:14px;color:#6B7280;">Keep creating. Keep growing. Keep inspiring.</p>
+        </div>
+  
+        <!-- Footer with social links -->
+        <div style="background:#F9FAFB;padding:20px;text-align:center;font-size:14px;color:#6B7280;">
+          <p style="margin-bottom:10px;">Follow us for updates & tips:</p>
+          <a href="https://facebook.com/siddthecoder" style="margin: 0 8px;" target="_blank" rel="noopener noreferrer">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" width="24" />
+          </a>
+          <a href="https://instagram.com/siddhant_.ydv" style="margin: 0 8px;" target="_blank" rel="noopener noreferrer">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733558.png" alt="Instagram" width="24" />
+          </a>
+          <a href="https://github.com/siddthecoder" style="margin: 0 8px;" target="_blank" rel="noopener noreferrer">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733553.png" alt="GitHub" width="24" />
+          </a>
+          <a href="https://linkedin.com/in/siddthecoder" style="margin: 0 8px;" target="_blank" rel="noopener noreferrer">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733561.png" alt="LinkedIn" width="24" />
+          </a>
+          <p style="margin-top:15px;font-size:12px;color:#9CA3AF;">&copy; ${new Date().getFullYear()} Anbari. All rights reserved.</p>
+        </div>
+      </div>
+    `
+  });
+  
+
 
   return res.status(200).json(
     new ApiResponse(200,store,'Store Created Successfully')
@@ -118,7 +181,7 @@ export const updateStoreCredentials = asyncHandler(async (req, res) => {
     const now = dayjs();
 
     if (lastUpdated && now.diff(dayjs(lastUpdated), 'day') < 7) {
-      throw new ApiError(403, `Store name can only be changed once every 14 days. Try again after ${dayjs(lastUpdated).add(14, 'day').format('DD MMM YYYY')}`);
+      throw new ApiError(403, `Store name can only be changed once every 14 days. Try again after ${dayjs(lastUpdated).add(7, 'day').format('DD MMM YYYY')}`);
     }
   }
 

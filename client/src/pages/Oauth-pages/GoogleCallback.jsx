@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { googleLoginRegister } from '../../features/auth/authThunks';
+import LoaderModal from '../../components/LoaderModal';
 
 const GoogleCallback = () => {
   const dispatch = useDispatch();
@@ -20,7 +21,7 @@ const GoogleCallback = () => {
     }
   }, [dispatch, navigate]);
 
-  return <p>Redirecting...</p>;
+  return <LoaderModal />;
 };
 
 export default GoogleCallback;

@@ -128,7 +128,7 @@ const Sidebar = () => {
                 {isOpen ? (
                   <span>{label}</span>
                 ) : (
-                  <span className="absolute left-full ml-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                  <span className="absolute left-full ml-2 bg-blue-950 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50">
                     {label}
                   </span>
                 )}

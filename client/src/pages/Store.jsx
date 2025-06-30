@@ -4,9 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getAllStores } from '../features/store/storeThunks';
 import { setCurrentStore } from '../features/store/storeSlice';
 import { Listbox } from '@headlessui/react';
-import { ChevronDown, Container, Building2, Landmark, Store as StoreIcon, Plus } from 'lucide-react';
+import { ChevronDown, Container, Building2, Landmark, Store as StoreIcon, Plus, Box } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CreateStoreModal from '../components/CreateStoreModal';
+import Lottie from 'lottie-react';
+import CreateNewAnimated from '../assets/create-new-animated-logo.json'
 
 
 export default function Store() {
@@ -34,22 +36,21 @@ export default function Store() {
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-slate-100">
+    <div className="h-full w-full flex flex-col bg-slate-100/10">
       {/* Header */}
       <header className="bg-slate-100/10 shadow-md pl-4 flex justify-between items-center h-14 w-full pr-5 py-4 sticky top-0 z-50">
         <PageBacker />
 
-        <div className="flex text-[12px] items-center gap-2 bg-blue-200/30 hover:bg-blue-200/50 hover:text-blue-900 p-2 cursor-pointer rounded-md transition-all">
-          <Container size={20} />
-
-          {stores.length <= 1 ? (
-            <span>{stores.length === 0 ? 'New Store' : stores[0].storeName}</span>
+        <div className="flex text-[12px] items-center gap-2  py-1 cursor-pointer rounded-md transition-all">
+      
+          {stores.length === 0 ? (
+            <span onClick={() => setStoreCreateModalOpen(true)}>Create new store</span>
           ) : (
             <Listbox value={currentStore} onChange={handleStoreChange}>
-              <div className="relative w-44">
+              <div className="relative w-28 bg-blue-200/30 hover:bg-blue-200/50 hover:text-blue-900">
                 <Listbox.Button className="relative w-full cursor-pointer rounded-md py-1.5 pl-3 pr-10 text-left text-blue-800 shadow-sm text-sm">
                   <span className="block truncate">{currentStore?.storeName || 'Select Store'}</span>
-                  <span className="pointer-events-none absolute inset-y-0 right-5 flex items-center pr-2">
+                  <span className="pointer-events-none absolute inset-y-0 right-2 top-1 flex items-center pr-2">
                     <ChevronDown size={16} />
                   </span>
                 </Listbox.Button>
@@ -60,7 +61,7 @@ export default function Store() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg"
+                    className="absolute z-50 mt-1 max-h-60 w-44 right-1 overflow-auto rounded-md bg-white py-1 text-sm shadow-lg"
                   >
                     {stores.map((store, index) => {
                       const Icon = getStoreIcon(index);
@@ -94,11 +95,33 @@ export default function Store() {
           )}
           {/* Create Store Model */}
           {storeCreatemodalOpen && (<CreateStoreModal onClose={() => setStoreCreateModalOpen(false)} />)}
+          
+          <div className="relative group">
+            {/* The main box */}
+            <div className="hover:bg-blue-500 hover:text-blue-50 bg-blue-100 text-black rounded-md p-2 flex items-center justify-center">
+              <Box size={20} />
+            </div>
+
+            {/* Tooltip or absolute message */}
+            <div className="absolute top-full  -left-1/2 -translate-x-1/2 mt-2 px-3 py-1 rounded bg-blue-700 text-center text-white text-[12px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-36">
+              Create new product
+            </div>
+          </div>
+
         </div>
+
+
       </header>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto px-5 py-3 z-10 relative">
+      {stores.length === 0 ?
+        <div className='w-full h-full flex justify-center items-center relative'>
+          <span className='text-[14px] absolute top-10'>Create your first store.  <span onClick={() => setStoreCreateModalOpen(true)} className='text-white p-1 text-[15px] cursor-pointer highlight-tilt'>Create</span></span>
+          <span ><Lottie className='w-full' animationData={CreateNewAnimated} loop={true} /></span>
+        </div>
+        : 
+        // Actual Data
+        <div className="flex-1 overflow-y-auto px-5 py-3 z-10 relative">
         {/* Banner */}
         <div className="h-58 w-full rounded-md bg-slate-400/50 overflow-hidden">
           <img
@@ -119,18 +142,22 @@ export default function Store() {
               />
             </div>
             <div className="flex flex-col">
-              <span>{currentStore?.storeName || 'No Store Selected'}</span>
+              <span>{currentStore?.storeName}</span>
               <span>{currentStore?.likes?.length || 0} Likes</span>
             </div>
           </div>
           <div>Like</div>
         </div>
 
-        <div className="w-full flex justify-center border-b-2 border-slate-300/30"></div>
+          <div className="w-full flex justify-center border-b-2 border-slate-300/30"></div>
+          
 
         {/* Products */}
-        <div>Products</div>
+          <div className='mx-1'>Products
+       </div>
       </div>
+      }
+
     </div>
   );
 }
