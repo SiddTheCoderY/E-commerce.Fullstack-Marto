@@ -6,6 +6,7 @@ const initialState = {
   loading: false,
   error: null,
   success: null,
+  hasFetched : false
 }
 
 const storeSlice = createSlice({
@@ -29,10 +30,13 @@ const storeSlice = createSlice({
     },
     setError: (state, action) => {
       state.error = action.payload
-    }
+    },
+    setHasFetched: (state, action) => {
+      state.hasFetched = action.payload;
+    },
   }
 })
 
-export const { setStores, setCurrentStore, clearStoreState, setLoading, setError } = storeSlice.actions
+export const { setStores, setCurrentStore, clearStoreState, setLoading, setError, setHasFetched } = storeSlice.actions
 
 export default storeSlice.reducer

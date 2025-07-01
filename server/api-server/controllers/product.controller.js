@@ -1,4 +1,4 @@
-import { Product } from "../../shared/models/product.model";
+import { Product } from "../../shared/models/product.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -7,9 +7,9 @@ import { uploadOnCloudinary } from "../utils/Cloudinary.js";
 
 
 export const createProduct = asyncHandler(async (req, res) => {
-  const { title, description, price, discount, category, stock, features, isFeatured } = req.body
+  const { title, description, price, discount, category, stock, features, isFeatured,storeId } = req.body
 
-  const { storeId } = req.query
+  
   
   if ([title, description, price, discount, category, stock, features, isFeatured].some((field) => field === '')) {
     throw new ApiError(400,'Basic Fields are required')
@@ -25,7 +25,7 @@ export const createProduct = asyncHandler(async (req, res) => {
   }
 
   // handling file
-  const pictures = req.files?.images
+  const pictures = req.files
   console.log(pictures)
   const imagesUrls = []
 
@@ -33,7 +33,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     const pictureArray = Array.isArray(pictures) ? pictures : [pictures]
     
     for (const picture of pictureArray) {
-      const res = await uploadOnCloudinary(picture)
+      const res = await uploadOnCloudinary(picture.path)
       if (res) {
         imagesUrls.push(res.url)
       }

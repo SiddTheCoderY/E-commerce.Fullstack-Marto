@@ -9,12 +9,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import CreateStoreModal from '../components/CreateStoreModal';
 import Lottie from 'lottie-react';
 import CreateNewAnimated from '../assets/create-new-animated-logo.json'
-
+import CreateProductModal from '../components/CreateProductModal';
+import { setProducts } from '../features/product/productSlice';
+import ProductCard from '../components/ProductCard';
 
 export default function Store() {
   const dispatch = useDispatch();
   const [storeCreatemodalOpen, setStoreCreateModalOpen] = useState(false);
+  const [productCreatemodalOpen, setProductCreateModalOpen] = useState(false);
   const { stores, currentStore } = useSelector((state) => state.store);
+  const { products, loading } = useSelector((state) => state.product)
+  const { user } = useSelector((state) => state.user)
+   
 
   useEffect(() => {
     dispatch(getAllStores());
@@ -26,6 +32,7 @@ export default function Store() {
     } else {
       localStorage.setItem('selectedStoreId', selectedStore._id);
       dispatch(setCurrentStore(selectedStore));
+      dispatch(setProducts(selectedStore.products))
     }
   };
 
@@ -96,9 +103,11 @@ export default function Store() {
           {/* Create Store Model */}
           {storeCreatemodalOpen && (<CreateStoreModal onClose={() => setStoreCreateModalOpen(false)} />)}
           
+          
+          
           <div className="relative group">
             {/* The main box */}
-            <div className="hover:bg-blue-500 hover:text-blue-50 bg-blue-100 text-black rounded-md p-2 flex items-center justify-center">
+            <div onClick={(e) => setProductCreateModalOpen(true)}  className="hover:bg-blue-500 hover:text-blue-50 bg-blue-100 text-black rounded-md p-2 flex items-center justify-center">
               <Box size={20} />
             </div>
 
@@ -110,6 +119,7 @@ export default function Store() {
 
         </div>
 
+          {productCreatemodalOpen && (<CreateProductModal onClose={() => setProductCreateModalOpen(false)} />)}
 
       </header>
 
@@ -132,7 +142,7 @@ export default function Store() {
         </div>
 
         {/* Store Info */}
-        <div className="h-32 w-full flex justify-between items-center pr-20">
+        <div className="h-32 w-full flex justify-between items-center pr-5">
           <div className="flex gap-3 items-center h-full justify-center">
             <div className="h-26 w-26 rounded-full bg-blue-700 overflow-hidden">
               <img
@@ -146,15 +156,29 @@ export default function Store() {
               <span>{currentStore?.likes?.length || 0} Likes</span>
             </div>
           </div>
-          <div>Like</div>
+            <div className='p-2 rounded-md text-[13px] text-back cursor-pointer highlight-tilt text-white  transition-all duration-100 ease-in'>{ currentStore.owner === user._id ? 'Customize' : 'Like' }</div>
         </div>
 
           <div className="w-full flex justify-center border-b-2 border-slate-300/30"></div>
           
 
         {/* Products */}
-          <div className='mx-1'>Products
-       </div>
+          <div className='px-1 w-full flex flex-col gap-3 mt-2'>
+            <div className='w-full px-2'>
+              <span className='p-1 text-white highlight-tilt'>Products</span>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+              {loading
+                ? Array(4).fill(null).map((_, i) => (
+                    <ProductCard key={i} loading />
+                  ))
+                : products.map((p) => (
+                    <ProductCard key={p._id} product={p} loading={false} />
+                  ))}
+            </div>
+
+          </div>
       </div>
       }
 

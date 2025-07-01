@@ -30,7 +30,12 @@ function CreateStoreModal({ action, onClose }) {
   const { loading } = useSelector((state) => state.store)
   
   // main flag
-  const [flag,setFlag] = useState(1)
+  const [flag, setFlag] = useState(1)
+  const steps = [
+    { icon: <Store size={20} />, label: "Store Name" },
+    { icon: <BriefcaseBusiness size={20} />, label: "Details" },
+    { icon: <Camera size={20} />, label: "Media" },
+  ];
   
   const [storeFormData, setStoreFormData] = useState({
     storeName : '',
@@ -149,7 +154,7 @@ function CreateStoreModal({ action, onClose }) {
   // flag ( 3  )
   const [isThirdFlagReady,setThirdFlagReady] = useState(false)
   useEffect(() => {
-    const { logo, banner } = storeFormData;
+    const { logo, banner, } = storeFormData;
   
     // check if all fields are non-empty (and trimmed)
     const allFilled = [logo, banner].every(
@@ -193,6 +198,8 @@ function CreateStoreModal({ action, onClose }) {
     }
   }
 
+
+  //  dom --
   
   // StoreName 
   if (flag === 1) {
@@ -201,8 +208,35 @@ function CreateStoreModal({ action, onClose }) {
       <div className="bg-white rounded-xl shadow-xl px-6 py-4 w-[70vw] h-[90vh] max-w-[80vw] flex flex-col items-center gap-2 relative">
   
           <div className='w-full justify-end'><ModelExit onClose={onClose} /></div>
+
+          {/* Tracker */}
+          <div className="w-full flex justify-center items-center gap-26 mt-2 mb-4 absolute top-10">
+            {steps.map((step, index) => (
+              <div key={index} className="relative flex flex-col items-center group">
+                <div
+                  onClick={() => setFlag(index+1)}
+                  className={`cursor-pointer w-10 h-10 flex items-center justify-center rounded-full border-2 transition-all duration-300
+                    ${flag >= index + 1 ? 'border-blue-600 bg-blue-100 text-blue-800 shadow-lg' : 'border-gray-300 bg-white text-gray-400'}
+                  `}
+                >
+                  {step.icon}
+                </div>
+                <span className={`text-[10px] mt-1 ${flag === index + 1 ? 'text-blue-700 font-medium' : 'text-gray-400'}`}>
+                  {step.label}
+                </span>
+
+                {/* Progress Line */}
+                {index < steps.length - 1 && (
+                  <div className="absolute top-5 left-full w-24 h-1 bg-gray-300 group-hover:bg-blue-300">
+                    <div className={`h-full bg-blue-600 transition-all duration-500 rounded-full ${flag > index + 1 ? 'w-full' : 'w-0'}`} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>                            
+
           
-          <div className='w-full flex flex-col gap-2 p-5 mt-10'>
+          <div className='w-full flex flex-col gap-2 p-5 mt-26'>
 
             <div className='text-2xl flex gap-2 items-center text-blue-950'><Store className='relative top-[2px]' />Name Your <span className='relative inline-block highlight-tilt text-white'>Store</span>
             </div>
@@ -267,8 +301,35 @@ function CreateStoreModal({ action, onClose }) {
             <span><ModelExit onClose={onClose} /></span>
           </div>
 
+          {/* Tracker */}
+          <div className="w-full flex justify-center items-center gap-26 mt-2 mb-4 absolute top-10">
+            {steps.map((step, index) => (
+              <div key={index} className="relative flex flex-col items-center group">
+                <div
+                  onClick={() => setFlag(index+1)}
+                  className={`w-10 h-10 flex items-center justify-center rounded-full border-2 transition-all duration-300
+                    ${flag >= index + 1 ? 'border-blue-600 bg-blue-100 text-blue-800 shadow-lg' : 'border-gray-300 bg-white text-gray-400'}
+                  `}
+                >
+                  {step.icon}
+                </div>
+                <span className={`text-[10px] mt-1 ${flag === index + 1 ? 'text-blue-700 font-medium' : 'text-gray-400'}`}>
+                  {step.label}
+                </span>
 
-          <div className='w-full flex flex-col gap-2 sm:gap-4 p-5 mt-10'>
+                {/* Progress Line */}
+                {index < steps.length - 1 && (
+                  <div className="absolute top-5 left-full w-24 h-1 bg-gray-300 group-hover:bg-blue-300">
+                    <div className={`h-full bg-blue-600 transition-all duration-500 rounded-full ${flag > index + 1 ? 'w-full' : 'w-0'}`} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+
+
+          <div className='w-full flex flex-col gap-2 sm:gap-4 p-5 mt-26'>
 
             <div className='text-2xl flex gap-2 items-center text-blue-950'><BriefcaseBusiness className='relative top-[2px]' />Basic Details of 
             <span className="relative inline-block highlight-tilt text-white">
@@ -404,8 +465,35 @@ function CreateStoreModal({ action, onClose }) {
             <span><ModelExit onClose={onClose} /></span>
           </div>
 
+          {/* Tracker */}
+          <div className="w-full flex justify-center items-center gap-26 mt-2 mb-4 absolute top-10">
+            {steps.map((step, index) => (
+              <div key={index} className="relative flex flex-col items-center group">
+                <div
+                  onClick={() => setFlag(index+1)}
+                  className={`w-10 h-10 flex items-center justify-center rounded-full border-2 transition-all duration-300
+                    ${flag >= index + 1 ? 'border-blue-600 bg-blue-100 text-blue-800 shadow-lg' : 'border-gray-300 bg-white text-gray-400'}
+                  `}
+                >
+                  {step.icon}
+                </div>
+                <span className={`text-[10px] mt-1 ${flag === index + 1 ? 'text-blue-700 font-medium' : 'text-gray-400'}`}>
+                  {step.label}
+                </span>
 
-          <div className='w-full flex flex-col gap-2 sm:gap-4 p-5 mt-10'>
+                {/* Progress Line */}
+                {index < steps.length - 1 && (
+                  <div className="absolute top-5 left-full w-24 h-1 bg-gray-300 group-hover:bg-blue-300">
+                    <div className={`h-full bg-blue-600 transition-all duration-500 ${flag > index + 1 ? 'w-full' : 'w-0'}`} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+
+
+          <div className='w-full flex flex-col gap-2 sm:gap-4 p-5 mt-16'>
 
             <div className='text-2xl flex gap-2 items-center text-blue-950'> <Lottie animationData={BubbleAnimatedLogo} loop className="w-8 h-8 relative top-[3px]" />Banner | Logo
             <span className="relative inline-block highlight-tilt text-white">

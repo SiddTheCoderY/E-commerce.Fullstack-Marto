@@ -7,6 +7,7 @@ import { uploadOnCloudinary } from "../utils/Cloudinary.js";
 import { User } from "../../shared/models/user.model.js";
 import dayjs from 'dayjs'
 import sendMail from "../utils/sendMail.js";
+import { Product } from "../../shared/models/product.model.js";
 
 
 export const createStore = asyncHandler(async (req, res) => {
@@ -260,15 +261,28 @@ export const toggleTheStoreLike = asyncHandler(async (req, res) => {
 
 
 export const getAllStore = asyncHandler(async (req, res) => {
-  const stores = await Store.find({ owner: req.user._id })
-  const storeArray = Array.isArray(stores) ? stores : [stores]
-  if (storeArray.length === 0) {
+  // Find stores of user, sorted by createdAt descending (newest first)
+  const stores = await Store.find({ owner: req.user._id }).sort({ createdAt: -1 });
+
+  // Populate products and sort products by createdAt descending for each store
+  const storesWithProducts = await Promise.all(
+    stores.map(async (store) => {
+      // populate products
+      await store.populate({
+        path: 'products',
+        options: { sort: { createdAt: -1 } } // newest products first
+      });
+      return store;
+    })
+  );
+
+  if (!storesWithProducts.length) {
     return res.status(200).json(
-      new ApiResponse(200,[],'No store created yet')
-    )
+      new ApiResponse(200, [], 'No store created yet')
+    );
   }
 
   return res.status(200).json(
-    new ApiResponse(200,storeArray,'Store fetched successfully')
-  )
-})
+    new ApiResponse(200, storesWithProducts, 'Stores fetched successfully')
+  );
+});

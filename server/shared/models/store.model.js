@@ -143,5 +143,5 @@ const storeSchema = new mongoose.Schema({
     
   }, { timestamps: true });
 
-export const Store = mongoose.model('stores',storeSchema)  
+export const Store = mongoose.model('Store',storeSchema)  
   

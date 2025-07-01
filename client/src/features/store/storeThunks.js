@@ -1,11 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from '../../utils/axiosInstance';
-import { setStores, setCurrentStore, clearStoreState, setLoading, setError } from "./storeSlice";
+import { setStores, setCurrentStore, clearStoreState, setLoading, setError, setHasFetched } from "./storeSlice";
 import { useSelector } from "react-redux";
+import { setProducts } from "../product/productSlice";
 
 export const getAllStores = createAsyncThunk(
   'store/getAllStores',
-  async (_, { dispatch, rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue, getState }) => {
     try {
       dispatch(setLoading(true));
 
@@ -13,6 +14,8 @@ export const getAllStores = createAsyncThunk(
       const stores = response.data.data;
 
       dispatch(setStores(stores));
+      dispatch(setHasFetched(true))
+
 
       // Try to restore previously selected store from localStorage
       const storedId = localStorage.getItem('selectedStoreId');
@@ -24,6 +27,9 @@ export const getAllStores = createAsyncThunk(
         dispatch(setCurrentStore(stores[0])); // fallback to first store
         localStorage.setItem('selectedStoreId', stores[0]?._id);
       }
+
+      const currentStore = getState().store.currentStore;
+      dispatch(setProducts(currentStore?.products || []));
 
       return stores;
 
@@ -45,13 +51,14 @@ export const createStore = createAsyncThunk(
 
       const response = await axiosInstance.post('/store/create-store', storeData);
       const createdStore = response.data.data;
-      const { stores } = getState().store; // ✅ Correct way to access current store state
+      const { stores = [] } = getState().store; // ✅ Correct way to access current store state
       
       const newStores = [...stores, createdStore];
       dispatch(setStores(newStores));
+      dispatch(setHasFetched(true))
       dispatch(setCurrentStore(createdStore));
       localStorage.setItem('selectedStoreId', createdStore._id); 
-      console.log(response.data.data)
+      dispatch(setProducts(createdStore?.products || []))
 
       return createdStore;
     } catch (error) {

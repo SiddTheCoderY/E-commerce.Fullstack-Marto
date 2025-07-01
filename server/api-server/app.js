@@ -20,11 +20,13 @@ import userRoutes from './routes/user.routes.js'
 import { verifyJWT } from "./middlewares/authorize.middleware.js";
 import authRoutes from './routes/auth.routes.js'
 import storeRoutes from './routes/store.routes.js'
+import productRoutes from './routes/product.routes.js'
 
 // use routes
 app.use('/api/v1/user', userRoutes)
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/store', storeRoutes)
+app.use('/api/v1/product',productRoutes)
 
 
 

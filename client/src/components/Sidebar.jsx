@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../features/auth/authThunks';
 import { useNavigate } from 'react-router-dom';
-
+import { getAllStores } from '../features/store/storeThunks';
 import {
   LayoutDashboard,
   Trophy,
@@ -27,7 +27,11 @@ import { setIsSideBarCollapsed } from '../features/localState/localStateSlice';
 import Confirmer from './Confirmer';
 
 const Sidebar = () => {
-    const navigate = useNavigate()
+  // for pre-fectching the data from sidebar
+  const hasPrefetchedStores = useRef(false)
+  const { hasFetched } = useSelector((state) => state.store);
+
+  const navigate = useNavigate()
   const { user } = useSelector((state) => state.user);
   const {isSideBarCollapsed} = useSelector((state) => state.localState)
   const dispatch = useDispatch()
@@ -74,14 +78,7 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile overlay */}
-      {isMobile && isOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-30"
-          onClick={toggleSidebar}
-        />
-      )}
-
+  
       {/* Sidebar */}
       <div
         className={`fixed top-0 left-0 h-full z-40 transition-all duration-300 bg-white shadow-md flex flex-col justify-between
@@ -111,8 +108,16 @@ const Sidebar = () => {
 
           {/* Nav Items */}
           <nav className={`mt-6 flex flex-col gap-1`}>
-            {navItems.map(({ to, icon: Icon, label }, index) => (
+            {navItems.map(({ to, icon: Icon, label }, index) => {
+              const isStoresLink = to === '/stores';
+              return (
               <NavLink
+                onMouseEnter={() => {
+                  if (isStoresLink && (!hasPrefetchedStores.current || !hasFetched)) {
+                    dispatch(getAllStores());
+                    hasPrefetchedStores.current = true;
+                  }
+                }}
                 onClick={() => dispatch(setIsSideBarCollapsed(!isSideBarCollapsed))}
                 key={index}
                 to={to}
@@ -133,7 +138,7 @@ const Sidebar = () => {
                   </span>
                 )}
               </NavLink>
-            ))}
+            )})}
           </nav>
         </div>
 
@@ -160,7 +165,8 @@ const Sidebar = () => {
               )}
             </NavLink>
 
-            <div
+            {user && (
+              <div
               onClick={() => setIsLogoutConfirmerOn(true)}
               className=" cursor-pointer group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors relative"
             >
@@ -173,6 +179,8 @@ const Sidebar = () => {
                 </span>
               )}
             </div>
+            )}
+
               {isLogoutConfirmerOn && (
                 <Confirmer confirmatoryText={'Are You sure want to Logout ?'} action={handleLogout} onClose={() => setIsLogoutConfirmerOn(false)}  />
                 )}

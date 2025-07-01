@@ -2,14 +2,11 @@ import React from 'react'
 import Header from '../components/Header'
 import Sidebar from '../components/Sidebar'
 import { useSelector } from 'react-redux'
+import LoaderModal from '../components/LoaderModal'
 
 function Home() {
   const {loading} = useSelector((state) => state.user)
-  if(loading) return (
-    <>
-    <h1>At home screen</h1>
-    </>
-  )
+  if(loading) <LoaderModal />
   return (
     <>
      <div className='w-full h-full'>
