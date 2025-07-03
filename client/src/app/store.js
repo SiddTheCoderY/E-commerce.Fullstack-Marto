@@ -4,6 +4,7 @@ import localStateReducer from '../features/localState/localStateSlice';
 import storeReducer from '../features/store/storeSlice'
 import productReducer from '../features/product/productSlice'
 import wishListProductReducer from '../features/wishList/wishListSlice'
+import cartReducer from '../features/cart/cartSlice'
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     localState: localStateReducer,
     store: storeReducer,
     product: productReducer,
-    wishListProduct : wishListProductReducer
+    wishListProduct: wishListProductReducer,
+    cart : cartReducer,
   },
 })

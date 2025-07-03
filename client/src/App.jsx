@@ -18,6 +18,8 @@ import MainLayout from './layout/MainLayout';
 import Home from './pages/Home'
 import Store from './pages/Store';
 import PageNotFound from './pages/PageNotFound';
+import Cart from './pages/Cart';
+import { getCartProducts } from './features/cart/cartThunks';
 
 function App() {
   const dispatch = useDispatch();
@@ -25,6 +27,7 @@ function App() {
 
   React.useEffect(() => {
     dispatch(getCurrentUser());
+    dispatch(getCartProducts());
   }, [dispatch]);
 
   if (!isUserChecked) return <LoaderModal />;
@@ -86,6 +89,7 @@ function App() {
           <Route path="settings" element={<PrivateRoute><SettingLayout /></PrivateRoute>} />
           <Route path="stores" element={<PrivateRoute><Store /></PrivateRoute>} />
           <Route path="wishlist" element={<PrivateRoute><WishList /></PrivateRoute>} />
+          <Route path="cart" element={<PrivateRoute><Cart /></PrivateRoute>} />
 
           {/* Add more pages as needed */}
         </Route>

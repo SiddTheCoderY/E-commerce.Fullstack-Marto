@@ -28,8 +28,6 @@ export const getAllStores = createAsyncThunk(
         localStorage.setItem('selectedStoreId', stores[0]?._id);
       }
 
-      const currentStore = getState().store.currentStore;
-      dispatch(setProducts(currentStore?.products || []));
 
       return stores;
 

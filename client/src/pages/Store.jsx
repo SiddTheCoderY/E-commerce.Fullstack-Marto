@@ -28,8 +28,10 @@ export default function Store() {
   
 
   useEffect(() => {
-    navigate('/')
-    toast.error('Become Seller First')
+    if (!user) {
+      navigate("/");
+      toast.error("Become Seller First");
+    }
   }, []);
   
 

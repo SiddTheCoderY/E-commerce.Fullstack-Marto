@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Star, StarHalf, StarOff, Heart, ShoppingCart, BadgePercent, CheckCircle, PencilLine
 } from 'lucide-react';
@@ -7,12 +7,15 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast'
 import { useSelector,useDispatch } from 'react-redux'
 import { toggleProductToWishList } from '../features/wishList/wishListThunk'
+import { toggleProductToCart } from '../features/cart/cartThunks';
 
 
 const ProductCard = ({ loading, product }) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.user)
+  const { cartProducts } = useSelector((state) => state.cart)
+  
   
   const {
     title, price, discount, features, images = [],
@@ -57,15 +60,30 @@ const ProductCard = ({ loading, product }) => {
       
     }
   };
+  
+  const [cartStatus, setCartStatus] = useState(() => {
+    const initial = {};
+    if (cartProducts?.length) {
+      cartProducts?.forEach(item => {
+        initial[item.product?._id?.toString()] = true;
+      });
+    }
+    return initial;
+  });
 
-  const [cartStatus, setCartStatus] = useState({});
 
-  const toggleCart = (productId) => {
+  const toggleCart = async(productId) => {
+    console.log('toggline product', productId)
     setCartStatus((prev) => ({
       ...prev,
       [productId]: !prev[productId],
     }));
-    // You can store it in Redux or localStorage here too
+    
+    try {
+      await dispatch(toggleProductToCart({productId})).unwrap()
+    } catch (error) {
+      toast.error('Unable to toggle')
+    }
   };
   
   
@@ -92,8 +110,10 @@ const ProductCard = ({ loading, product }) => {
   }
   
   return (
-
-    <div key={product._id} className="relative bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-blue-300 p-3 max-w-xs w-full">
+    <div
+      key={product._id}
+      className="relative bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-blue-300 p-3 max-w-xs w-full"
+    >
       {/* Image Carousel */}
       <div className="relative w-full h-40 overflow-hidden rounded-lg mb-3 group">
         <img
@@ -105,10 +125,16 @@ const ProductCard = ({ loading, product }) => {
         {/* Prev/Next hover controls */}
         {images.length > 1 && (
           <>
-            <button onClick={prevImage} className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white/70 p-1 rounded-full text-gray-700 hover:bg-white">
+            <button
+              onClick={prevImage}
+              className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white/70 p-1 rounded-full text-gray-700 hover:bg-white"
+            >
               ‹
             </button>
-            <button onClick={nextImage} className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white/70 p-1 rounded-full text-gray-700 hover:bg-white">
+            <button
+              onClick={nextImage}
+              className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white/70 p-1 rounded-full text-gray-700 hover:bg-white"
+            >
               ›
             </button>
           </>
@@ -119,35 +145,49 @@ const ProductCard = ({ loading, product }) => {
           <button
             onClick={() => {
               if (user) {
-                toggleWishlist(product._id)
+                toggleWishlist(product._id);
               } else {
-                toast.error('Please Login First')
-                navigate('/')
+                toast.error("Please Login First");
+                navigate("/");
               }
             }}
             className={`absolute top-2 right-2 p-1 rounded-full shadow-md transition-all duration-300
-              ${wishlist[product._id] ? 'bg-red-100 text-red-600 scale-110' : 'bg-white text-blue-600 hover:bg-blue-100'}`}
+              ${
+                wishlist[product._id]
+                  ? "bg-red-100 text-red-600 scale-110"
+                  : "bg-white text-blue-600 hover:bg-blue-100"
+              }`}
           >
             <Heart
               size={18}
               className={`transition-transform duration-300 ${
-                wishlist[product._id] ? 'fill-red-600 text-red-600 heart-bounce' : ''
+                wishlist[product._id]
+                  ? "fill-red-600 text-red-600 heart-bounce"
+                  : ""
               }`}
             />
           </button>
         )}
 
         {/* Stock badge */}
-        <span className={`absolute bottom-2 left-2 text-[10px] px-2 py-0.5 rounded-full font-semibold
-          ${stock > 0 ? 'bg-green-300 text-green-950' : 'bg-red-100 text-red-600'}`}>
-          {stock > 0 ? 'In Stock' : 'Out of Stock'}
+        <span
+          className={`absolute bottom-2 left-2 text-[10px] px-2 py-0.5 rounded-full font-semibold
+          ${
+            stock > 0
+              ? "bg-green-300 text-green-950"
+              : "bg-red-100 text-red-600"
+          }`}
+        >
+          {stock > 0 ? "In Stock" : "Out of Stock"}
         </span>
       </div>
 
       {/* Info */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-800 line-clamp-2">{title}</h2>
+          <h2 className="text-sm font-semibold text-gray-800 line-clamp-2">
+            {title}
+          </h2>
           {isFeatured && (
             <span className="text-[10px] text-blue-600 font-semibold flex items-center gap-0.5">
               <CheckCircle size={12} /> Featured
@@ -173,7 +213,10 @@ const ProductCard = ({ loading, product }) => {
 
         <div className="flex flex-wrap gap-1 mt-1">
           {features?.slice(0, 3).map((f, i) => (
-            <span key={i} className="bg-blue-50 text-blue-600 text-[10px] px-2 py-[2px] rounded-full">
+            <span
+              key={i}
+              className="bg-blue-50 text-blue-600 text-[10px] px-2 py-[2px] rounded-full"
+            >
               {f}
             </span>
           ))}
@@ -183,49 +226,65 @@ const ProductCard = ({ loading, product }) => {
       {/* Actions */}
       <div className="mt-3 flex justify-between items-center">
         <span className="text-xs text-gray-400">Stock: {stock}</span>
-        <div className="flex gap-1.5">
-          {user?._id !== product.seller ? (
-            <div className="relative">
-              <button
-                onClick={() => toggleCart(product._id)}
-                className={`
+        {cartProducts && (
+          <div className="flex gap-1.5">
+            {user?._id !== product.seller ? (
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    if (user) {
+                      toggleCart(product._id);
+                    } else {
+                      toast.error("Please login first !")
+                    }
+                  }}
+                  className={`
                   text-[12px]
                   group flex items-center gap-2 transition-all duration-300 ease-in-out
                   rounded-full bg-gradient-to-r  text-white
                   overflow-hidden px-3 py-1 h-8
-                  ${cartStatus[product._id] ? 'w-34 from-blue-500 to-blue-800' : 'w-10 group-hover:w-34 from-blue-900 to-blue-950'}
+                  ${
+                    cartStatus[product._id?.toString()]
+                      ? "w-34 from-blue-500 to-blue-800"
+                      : "w-10 group-hover:w-34 from-blue-900 to-blue-950"
+                  }
                 `}
-              >
-                {/* Icon */}
-                <div className="z-10 flex-shrink-0">
-                  {cartStatus[product._id] ? (
-                    <CheckCircle size={18} />
-                  ) : (
-                    <ShoppingCart size={18} />
-                  )}
-                </div>
+                >
+                  {/* Icon */}
+                  <div className="z-10 flex-shrink-0">
+                    {cartStatus[product._id?.toString()] ? (
+                      <CheckCircle size={18} />
+                    ) : (
+                      <ShoppingCart size={18} />
+                    )}
+                  </div>
 
-                {/* Sliding Text */}
-                <span
-                  className={`
+                  {/* Sliding Text */}
+                  <span
+                    className={`
                     text-[12.5px] font-medium whitespace-nowrap transition-all duration-300
                     transform
-                    ${cartStatus[product._id]
-                      ? 'opacity-100 translate-x-0'
-                      : 'opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0'}
+                    ${
+                      cartStatus[product._id?.toString()]
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0"
+                    }
                   `}
-                >
-                  {cartStatus[product._id] ? 'Added to Cart' : 'Add to Cart'}
-                </span>
+                  >
+                    {cartStatus[product._id?.toString()]
+                      ? "Added to Cart"
+                      : "Add to Cart"}
+                  </span>
+                </button>
+              </div>
+            ) : (
+              <button className="cursor-pointer hover:scale-110 p-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition flex flex-col">
+                <PencilLine size={16} />
               </button>
-            </div>
-          ) : (
-            <button className="cursor-pointer hover:scale-110 p-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition flex flex-col">
-              <PencilLine size={16} />
-            </button>
-          )}
-        </div>
-
+            )}
+          </div>
+        )}
+       
       </div>
     </div>
   );

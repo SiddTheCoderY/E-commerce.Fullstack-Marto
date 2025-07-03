@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {ChevronDown, ArrowRight,ShoppingCart } from 'lucide-react'
 import Button from './Button';
 import Lottie from "lottie-react";
@@ -7,12 +7,18 @@ import LanguageAnimatedLogo from '../assets/language-animated-logo.json'
 import CompanyLogo from '../assets/animated-logo-cart.json';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { getCartProducts } from '../features/cart/cartThunks';
 
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const { isSideBarCollapsed } = useSelector((state) => state.localState)
+  const { cartProductsLength } = useSelector((state) => state.cart)
+ 
+  useEffect(() => {
+    getCartProducts()
+  }, [dispatch])
 
   return (
     <header className="bg-slate-100/10 shadow-md pl-4 flex justify-between items-center h-14 w-full">
@@ -33,7 +39,7 @@ const Header = () => {
     <div className='flex items-center justify-center gap-1 hover:gap-2 transition-all duration-150 ease-in cursor-pointer hover:bg-slate-100/30 p-2 rounded-md'>
       <span className='relative hover:scale-110 transition-all duration-150 ease'>
         <Lottie className='w-8' animationData={CartAnimatedLogo} loop={true} />
-        <span className='w-2 h-2 text-[10px] bg-red-500 p-2 text-white rounded-full flex items-center justify-center absolute left-6 top-0'>0</span>
+            <span className='w-2 h-2 text-[10px] bg-red-500 p-2 text-white rounded-full flex items-center justify-center absolute left-6 top-0'>{ cartProductsLength}</span>
       </span>
     </div>
 

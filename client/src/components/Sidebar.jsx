@@ -28,11 +28,15 @@ import CompanyLogo from '../assets/animated-logo-cart.json';
 import BecomeSeller from '../assets/Seller-Animation.json'
 import { setIsSideBarCollapsed } from '../features/localState/localStateSlice';
 import Confirmer from './Confirmer';
+import { getCartProducts } from '../features/cart/cartThunks';
 
 const Sidebar = () => {
   // for pre-fectching the data from sidebar
   const hasPrefetchedStores = useRef(false)
   const { hasFetched } = useSelector((state) => state.store);
+
+  const hasPrefetchedCart = useRef(false)
+  const { hasCartFetched } = useSelector((state) => state.cart);
 
   const navigate = useNavigate()
   const { user } = useSelector((state) => state.user);
@@ -113,13 +117,19 @@ const Sidebar = () => {
           <nav className={`mt-6 flex flex-col gap-1`}>
             {navItems.map(({ to, icon: Icon, label }, index) => {
               const isStoresLink = to === '/stores';
+              const isCartLink = to === "/cart";
               return (
               <NavLink
                 onMouseEnter={() => {
                   if (isStoresLink && (!hasPrefetchedStores.current || !hasFetched)) {
                     dispatch(getAllStores());
+                    console.log("Data Fetched")
                     hasPrefetchedStores.current = true;
-                  }
+                    }
+                   if (isCartLink && (!hasPrefetchedCart.current || !hasCartFetched)) {
+                      dispatch(getCartProducts())
+                      hasPrefetchedCart.current = true
+                  }  
                 }}
                 onClick={() => dispatch(setIsSideBarCollapsed(!isSideBarCollapsed))}
                 key={index}
@@ -149,9 +159,9 @@ const Sidebar = () => {
         <div className="px-4 py-2 border-t border-gray-200 mb-3">
           <div className="flex flex-col gap-2">
 
-          {user && (
+          {(user && user.role === 'consumer') && (
               <div
-              onClick={() => setIsLogoutConfirmerOn(true)}
+             
               className=" cursor-pointer group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-red-50 transition-colors relative"
             >
              <Speech  className="w-[18px] h-[18px]" />

@@ -43,7 +43,7 @@ export const getAllProducts = createAsyncThunk(
 
       const response = await axiosInstance.get('/product/get-all-products')
 
-      console.log('All Products', response.data.data)
+      // console.log('All Products', response.data.data)
       dispatch(setProducts(response.data.data))
 
 
