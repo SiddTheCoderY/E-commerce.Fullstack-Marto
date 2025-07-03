@@ -10,12 +10,14 @@ import Register from './pages/Register';
 import GoogleCallback from './pages/Oauth-pages/GoogleCallback';
 
 import Dashboard from './pages/Dashboard';
+import WishList from './pages/WishList';
 import MessagePage from './pages/MessagePage';
 import SettingLayout from './pages/Setting/SettingLayout';
 import PrivateRoute from './routes/PrivateRoute';
 import MainLayout from './layout/MainLayout';
 import Home from './pages/Home'
 import Store from './pages/Store';
+import PageNotFound from './pages/PageNotFound';
 
 function App() {
   const dispatch = useDispatch();
@@ -83,11 +85,12 @@ function App() {
           <Route path="messages" element={<PrivateRoute><MessagePage /></PrivateRoute>} />
           <Route path="settings" element={<PrivateRoute><SettingLayout /></PrivateRoute>} />
           <Route path="stores" element={<PrivateRoute><Store /></PrivateRoute>} />
+          <Route path="wishlist" element={<PrivateRoute><WishList /></PrivateRoute>} />
 
           {/* Add more pages as needed */}
         </Route>
 
-        {/* <Route path='*' element={<ErrorPage />} /> */}
+        <Route path='*' element={<PageNotFound />} />
       </Routes>
     </Router>
     </>

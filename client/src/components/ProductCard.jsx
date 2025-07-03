@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
 import {
-  Star, StarHalf, StarOff, Heart, ShoppingCart, BadgePercent, CheckCircle
+  Star, StarHalf, StarOff, Heart, ShoppingCart, BadgePercent, CheckCircle, PencilLine
 } from 'lucide-react';
 
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast'
+import { useSelector,useDispatch } from 'react-redux'
+import { toggleProductToWishList } from '../features/wishList/wishListThunk'
+
+
 const ProductCard = ({ loading, product }) => {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { user } = useSelector((state) => state.user)
+  
   const {
     title, price, discount, features, images = [],
     category, isFeatured, stock, ratings
@@ -13,8 +23,8 @@ const ProductCard = ({ loading, product }) => {
 
   const renderStars = () => {
     const stars = [];
-    const full = Math.floor(ratings.average || 0);
-    const hasHalf = ratings.average % 1 >= 0.5;
+    const full = Math.floor(ratings?.average || 0);
+    const hasHalf = ratings?.average % 1 >= 0.5;
     const empty = 5 - full - (hasHalf ? 1 : 0);
 
     for (let i = 0; i < full; i++) stars.push(<Star key={`f-${i}`} size={14} className="text-yellow-400" />);
@@ -25,8 +35,41 @@ const ProductCard = ({ loading, product }) => {
 
   const nextImage = () => setCurrentImageIndex((currentImageIndex + 1) % images.length);
   const prevImage = () => setCurrentImageIndex((currentImageIndex - 1 + images.length) % images.length);
+
+  const [wishlist, setWishlist] = useState(() => {
+    const initial = {};
+    if (user?.wishListProducts?.length) {
+      user.wishListProducts.forEach(id => {
+        initial[id] = true;
+      });
+    }
+    return initial;
+  });
+
+  const toggleWishlist = async(productId) => {
+    setWishlist((prev) => ({
+      ...prev,
+      [productId]: !prev[productId],
+    }));
+    try {
+      await dispatch(toggleProductToWishList({productId})).unwrap()
+    } catch (error) {
+      
+    }
+  };
+
+  const [cartStatus, setCartStatus] = useState({});
+
+  const toggleCart = (productId) => {
+    setCartStatus((prev) => ({
+      ...prev,
+      [productId]: !prev[productId],
+    }));
+    // You can store it in Redux or localStorage here too
+  };
   
-      if (loading) {
+  
+  if (loading) {        
         return (
           <div className="bg-white rounded-xl shadow-md border p-3 max-w-xs w-full animate-pulse space-y-3">
             <div className="w-full h-40 bg-gray-200 rounded-lg" />
@@ -46,11 +89,11 @@ const ProductCard = ({ loading, product }) => {
             </div>
           </div>
         );
-      }
-
+  }
+  
   return (
 
-    <div className="relative bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-blue-300 p-3 max-w-xs w-full">
+    <div key={product._id} className="relative bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-blue-300 p-3 max-w-xs w-full">
       {/* Image Carousel */}
       <div className="relative w-full h-40 overflow-hidden rounded-lg mb-3 group">
         <img
@@ -72,9 +115,27 @@ const ProductCard = ({ loading, product }) => {
         )}
 
         {/* Wishlist Icon */}
-        <button className="absolute top-2 right-2 bg-white rounded-full p-1 text-blue-600 hover:bg-blue-100 shadow-md">
-          <Heart size={16} />
-        </button>
+        {(!user || user?._id !== product?.seller) && (
+          <button
+            onClick={() => {
+              if (user) {
+                toggleWishlist(product._id)
+              } else {
+                toast.error('Please Login First')
+                navigate('/')
+              }
+            }}
+            className={`absolute top-2 right-2 p-1 rounded-full shadow-md transition-all duration-300
+              ${wishlist[product._id] ? 'bg-red-100 text-red-600 scale-110' : 'bg-white text-blue-600 hover:bg-blue-100'}`}
+          >
+            <Heart
+              size={18}
+              className={`transition-transform duration-300 ${
+                wishlist[product._id] ? 'fill-red-600 text-red-600 heart-bounce' : ''
+              }`}
+            />
+          </button>
+        )}
 
         {/* Stock badge */}
         <span className={`absolute bottom-2 left-2 text-[10px] px-2 py-0.5 rounded-full font-semibold
@@ -107,11 +168,11 @@ const ProductCard = ({ loading, product }) => {
 
         <div className="flex items-center gap-1">
           {renderStars()}
-          <span className="text-xs text-gray-500 ml-1">({ratings.count})</span>
+          <span className="text-xs text-gray-500 ml-1">({ratings?.count})</span>
         </div>
 
         <div className="flex flex-wrap gap-1 mt-1">
-          {features.slice(0, 3).map((f, i) => (
+          {features?.slice(0, 3).map((f, i) => (
             <span key={i} className="bg-blue-50 text-blue-600 text-[10px] px-2 py-[2px] rounded-full">
               {f}
             </span>
@@ -123,10 +184,48 @@ const ProductCard = ({ loading, product }) => {
       <div className="mt-3 flex justify-between items-center">
         <span className="text-xs text-gray-400">Stock: {stock}</span>
         <div className="flex gap-1.5">
-          <button className="p-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition">
-            <ShoppingCart size={16} />
-          </button>
+          {user?._id !== product.seller ? (
+            <div className="relative">
+              <button
+                onClick={() => toggleCart(product._id)}
+                className={`
+                  text-[12px]
+                  group flex items-center gap-2 transition-all duration-300 ease-in-out
+                  rounded-full bg-gradient-to-r  text-white
+                  overflow-hidden px-3 py-1 h-8
+                  ${cartStatus[product._id] ? 'w-34 from-blue-500 to-blue-800' : 'w-10 group-hover:w-34 from-blue-900 to-blue-950'}
+                `}
+              >
+                {/* Icon */}
+                <div className="z-10 flex-shrink-0">
+                  {cartStatus[product._id] ? (
+                    <CheckCircle size={18} />
+                  ) : (
+                    <ShoppingCart size={18} />
+                  )}
+                </div>
+
+                {/* Sliding Text */}
+                <span
+                  className={`
+                    text-[12.5px] font-medium whitespace-nowrap transition-all duration-300
+                    transform
+                    ${cartStatus[product._id]
+                      ? 'opacity-100 translate-x-0'
+                      : 'opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0'}
+                  `}
+                >
+                  {cartStatus[product._id] ? 'Added to Cart' : 'Add to Cart'}
+                </span>
+              </button>
+            </div>
+          ) : (
+            <button className="cursor-pointer hover:scale-110 p-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition flex flex-col">
+              <PencilLine size={16} />
+            </button>
+          )}
         </div>
+
       </div>
     </div>
   );

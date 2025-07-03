@@ -4,12 +4,12 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Store } from '../../shared/models/store.model.js'
 import { uploadOnCloudinary } from "../utils/Cloudinary.js";
+import { User } from "../../shared/models/user.model.js";
 
 
 export const createProduct = asyncHandler(async (req, res) => {
   const { title, description, price, discount, category, stock, features, isFeatured,storeId } = req.body
 
-  
   
   if ([title, description, price, discount, category, stock, features, isFeatured].some((field) => field === '')) {
     throw new ApiError(400,'Basic Fields are required')
@@ -204,8 +204,78 @@ export const getProductsByStore = asyncHandler(async (req, res) => {
   );
 });
 
+export const toggleProductToWishList = asyncHandler(async (req, res) => {
+  const { productId } = req.body;
+
+  if (!productId) {
+    throw new ApiError(400, 'Product ID required');
+  }
+
+  const user = await User.findById(req.user?._id);
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  const alreadyExists = user.wishListProducts?.includes(productId);
+
+  if (alreadyExists) {
+    // Remove product from wishlist
+    user.wishListProducts = user.wishListProducts.filter(
+      (id) => id.toString() !== productId.toString()
+    );
+  } else {
+    // Add product to wishlist
+    user.wishListProducts.push(productId);
+  }
+
+  await user.save();
+
+  // ✅ Fetch full product object (for frontend to update UI)
+  const toggledProduct = await Product.findById(productId);
+  if (!toggledProduct) {
+    throw new ApiError(404, 'Product not found');
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: alreadyExists
+      ? 'Product removed from wishlist'
+      : 'Product added to wishlist',
+    userWishListIds: user.wishListProducts,
+    toggledProduct,
+  });
+});
+
+
+export const getWishListedProducts = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user?._id)
+  const products = await user.populate('wishListProducts')
+  if (products.length === 0) {
+    return res.status(200).json(
+      new ApiResponse(200,[],'No wish list product' )
+    )
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200,products.wishListProducts,'Wish List products fetched successfully')
+  )
+})
+
 export const getAllProducts = asyncHandler(async (req, res) => {
-  // concept of navigation apply.. , isFeatured ()-->
+  const products = await Product.find({})
+  if (products.length === 0) {
+    res.status(200).json(
+      new ApiResponse(200,[],'No product in the DB')
+    )
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      products,
+      'Products fetched successfully'
+    )
+  )
 })
 
 export const getProductsByCategory = asyncHandler(async (req, res) => {})

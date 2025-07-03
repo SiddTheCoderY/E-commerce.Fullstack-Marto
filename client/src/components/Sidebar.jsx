@@ -18,11 +18,14 @@ import {
   ChevronLeft,
   ChevronRight,
   Store,
-  AlignJustify
+  AlignJustify,
+  Slack,
+  Speech
 } from 'lucide-react';
 
 import Lottie from 'lottie-react';
 import CompanyLogo from '../assets/animated-logo-cart.json';
+import BecomeSeller from '../assets/Seller-Animation.json'
 import { setIsSideBarCollapsed } from '../features/localState/localStateSlice';
 import Confirmer from './Confirmer';
 
@@ -145,6 +148,23 @@ const Sidebar = () => {
         {/* Bottom Section */}
         <div className="px-4 py-2 border-t border-gray-200 mb-3">
           <div className="flex flex-col gap-2">
+
+          {user && (
+              <div
+              onClick={() => setIsLogoutConfirmerOn(true)}
+              className=" cursor-pointer group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-red-50 transition-colors relative"
+            >
+             <Speech  className="w-[18px] h-[18px]" />
+              {isOpen ? (
+                <span>Become Seller</span>
+              ) : (
+                <span className="absolute left-full ml-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                  Become Seller
+                </span>
+              )}
+            </div>
+            )}
+
             <NavLink
               to="/settings"
               className={({ isActive }) =>

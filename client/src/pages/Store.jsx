@@ -12,8 +12,12 @@ import CreateNewAnimated from '../assets/create-new-animated-logo.json'
 import CreateProductModal from '../components/CreateProductModal';
 import { setProducts } from '../features/product/productSlice';
 import ProductCard from '../components/ProductCard';
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
+
 
 export default function Store() {
+  const navigate = useNavigate()
   const dispatch = useDispatch();
   const [storeCreatemodalOpen, setStoreCreateModalOpen] = useState(false);
   const [productCreatemodalOpen, setProductCreateModalOpen] = useState(false);
@@ -21,6 +25,13 @@ export default function Store() {
   const { products, loading } = useSelector((state) => state.product)
   const { user } = useSelector((state) => state.user)
    
+  
+
+  useEffect(() => {
+    navigate('/')
+    toast.error('Become Seller First')
+  }, []);
+  
 
   useEffect(() => {
     dispatch(getAllStores());
@@ -142,7 +153,7 @@ export default function Store() {
         </div>
 
         {/* Store Info */}
-        <div className="h-32 w-full flex justify-between items-center pr-5">
+        <div className="h-32 w-full flex justify-between items-center pr-0">
           <div className="flex gap-3 items-center h-full justify-center">
             <div className="h-26 w-26 rounded-full bg-blue-700 overflow-hidden">
               <img
@@ -169,15 +180,10 @@ export default function Store() {
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-              {loading
-                ? Array(4).fill(null).map((_, i) => (
-                    <ProductCard key={i} loading />
-                  ))
-                : products.map((p) => (
-                    <ProductCard key={p._id} product={p} loading={false} />
-                  ))}
+            {products && (
+              products?.map((product) => (<ProductCard key={product._id} product={product} loading={loading} />))
+            )}
             </div>
-
           </div>
       </div>
       }

@@ -32,9 +32,12 @@ const userSlice = createSlice({
       setUserChecked: (state, action) => {
         state.isUserChecked = true;
       },
+      updateUserWishList: (state, action) => {
+        state.user.wishListProducts = action.payload;
+      }
     }
 })
 
-export const {setUser,setLoading,setError,clearUser,setUserChecked} = userSlice.actions
+export const {setUser,setLoading,setError,clearUser,setUserChecked, updateUserWishList} = userSlice.actions
 
 export default userSlice.reducer

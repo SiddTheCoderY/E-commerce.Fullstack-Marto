@@ -38,6 +38,23 @@ export const createProduct = createAsyncThunk(
 export const getAllProducts = createAsyncThunk(
   'product/getAllProducts',
   async (_, { dispatch, rejectWithValue }) => {
-    
+    try {
+      dispatch(setLoading(true))
+
+      const response = await axiosInstance.get('/product/get-all-products')
+
+      console.log('All Products', response.data.data)
+      dispatch(setProducts(response.data.data))
+
+
+      return response.data.data
+      
+    } catch (error) {
+      console.log('err at geting products', error);
+      dispatch(setError(error.response?.data?.message || 'Error occurred while fetching the products'));
+      return rejectWithValue(error.response?.data || error.message);
+    } finally {
+      dispatch(setLoading(false));
+    }
   }
 )
