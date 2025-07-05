@@ -62,6 +62,7 @@ const Sidebar = () => {
     { to: '/', icon: LayoutDashboard, label: 'Home' },
     { to: '/cart', icon: ShoppingBag, label: 'Cart' },
     { to: '/wishlist', icon: Heart, label: 'Wishlist' },
+    { to: '/orders', icon: ShoppingCart, label: 'Orders' },
     { to: '/messages', icon: MessageCircle, label: 'Messages' },
   ];
 

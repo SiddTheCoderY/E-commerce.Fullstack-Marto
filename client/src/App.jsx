@@ -21,6 +21,8 @@ import PageNotFound from './pages/PageNotFound';
 import Cart from './pages/Cart';
 import { getCartProducts } from './features/cart/cartThunks';
 import SearchPage from './pages/SearchPage';
+import ProductPage from './pages/ProductPage';
+import OrderPage from './pages/OrderPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -92,6 +94,8 @@ function App() {
           <Route path="stores" element={<PrivateRoute><Store /></PrivateRoute>} />
           <Route path="wishlist" element={<PrivateRoute><WishList /></PrivateRoute>} />
           <Route path="cart" element={<PrivateRoute><Cart /></PrivateRoute>} />
+          <Route path="products" element={<PrivateRoute><ProductPage /></PrivateRoute>} />
+          <Route path="orders" element={<PrivateRoute><OrderPage /></PrivateRoute>} />
           <Route path="search" element={<PrivateRoute><SearchPage /></PrivateRoute>} />
 
           {/* Add more pages as needed */}

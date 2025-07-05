@@ -16,10 +16,39 @@ const ProductCard = ({ loading, product }) => {
   const { user } = useSelector((state) => state.user)
   const { cartProducts } = useSelector((state) => state.cart)
   
-  
+  if (loading || !product) {
+    return (
+      <div className="bg-white rounded-xl shadow-md border p-3 max-w-xs w-full animate-pulse space-y-3">
+        <div className="w-full h-40 bg-gray-200 rounded-lg" />
+        <div className="h-4 bg-gray-200 rounded w-3/4" />
+        <div className="h-3 bg-gray-200 rounded w-1/2" />
+        <div className="h-4 bg-gray-200 rounded w-2/3" />
+        <div className="flex gap-2 mt-2">
+          <div className="h-5 w-12 bg-gray-200 rounded-full" />
+          <div className="h-5 w-12 bg-gray-200 rounded-full" />
+        </div>
+        <div className="flex justify-between items-center mt-4">
+          <div className="h-3 w-16 bg-gray-200 rounded" />
+          <div className="flex gap-2">
+            <div className="h-7 w-7 rounded-full bg-gray-200" />
+            <div className="h-7 w-7 rounded-full bg-gray-200" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Destructure product properties
   const {
-    title, price, discount, features, images = [],
-    category, isFeatured, stock, ratings
+    title,
+    price,
+    discount,
+    features,
+    images = [],
+    category,
+    isFeatured,
+    stock,
+    ratings,
   } = product;
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -86,28 +115,6 @@ const ProductCard = ({ loading, product }) => {
     }
   };
   
-  
-  if (loading) {        
-        return (
-          <div className="bg-white rounded-xl shadow-md border p-3 max-w-xs w-full animate-pulse space-y-3">
-            <div className="w-full h-40 bg-gray-200 rounded-lg" />
-            <div className="h-4 bg-gray-200 rounded w-3/4" />
-            <div className="h-3 bg-gray-200 rounded w-1/2" />
-            <div className="h-4 bg-gray-200 rounded w-2/3" />
-            <div className="flex gap-2 mt-2">
-              <div className="h-5 w-12 bg-gray-200 rounded-full" />
-              <div className="h-5 w-12 bg-gray-200 rounded-full" />
-            </div>
-            <div className="flex justify-between items-center mt-4">
-              <div className="h-3 w-16 bg-gray-200 rounded" />
-              <div className="flex gap-2">
-                <div className="h-7 w-7 rounded-full bg-gray-200" />
-                <div className="h-7 w-7 rounded-full bg-gray-200" />
-              </div>
-            </div>
-          </div>
-        );
-  }
   
   return (
     <div
