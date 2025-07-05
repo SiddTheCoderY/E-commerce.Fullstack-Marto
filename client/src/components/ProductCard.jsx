@@ -73,7 +73,7 @@ const ProductCard = ({ loading, product }) => {
 
 
   const toggleCart = async(productId) => {
-    console.log('toggline product', productId)
+    console.log('toggling product', productId)
     setCartStatus((prev) => ({
       ...prev,
       [productId]: !prev[productId],
@@ -242,7 +242,7 @@ const ProductCard = ({ loading, product }) => {
                   text-[12px]
                   group flex items-center gap-2 transition-all duration-300 ease-in-out
                   rounded-full bg-gradient-to-r  text-white
-                  overflow-hidden px-3 py-1 h-8
+                  overflow-hidden px-3 py-1 h-8 cursor-pointer
                   ${
                     cartStatus[product._id?.toString()]
                       ? "w-34 from-blue-500 to-blue-800"

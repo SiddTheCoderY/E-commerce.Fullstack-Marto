@@ -1,6 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../utils/axiosInstance';
 import { setUser, setLoading, setError, clearUser } from '../user/userSlice';
+import { setWishListProducts } from '../wishList/wishListSlice';
+import { setCartProducts, setCartProductsLength } from '../cart/cartSlice';
 
 
 export const registerUser = createAsyncThunk(
@@ -75,6 +77,9 @@ export const logoutUser = createAsyncThunk(
       const response = await axiosInstance.post('/user/logout-user')
       console.log(response.data.data)
       dispatch(clearUser())
+      dispatch(setWishListProducts([]))
+      dispatch(setCartProductsLength(0))
+      dispatch(setCartProducts([]))
       return response.data.data
       
     } catch (error) {

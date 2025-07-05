@@ -11,7 +11,7 @@ const CartItem = ({ item }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -30 }}
       transition={{ duration: 0.3 }}
-      className="bg-black/4 rounded-xl shadow-md p-4 mb-4 w-full max-w-6xl py-5 mx-auto flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 relative z-0"
+      className="bg-black/5 rounded-xl shadow-md p-4 mb-4 w-full max-w-6xl py-5 mx-auto flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 relative z-0"
     >
       {/* Left: Product Image */}
       <img
@@ -37,7 +37,7 @@ const CartItem = ({ item }) => {
           ))}
         </div>
         <p className="text-sm text-gray-500 mt-2">
-          Stock: {item.product.stock}
+          Stock: <span className="text-green-600">{item.product.stock}</span>
         </p>
       </div>
 

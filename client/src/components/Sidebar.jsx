@@ -131,7 +131,7 @@ const Sidebar = () => {
                       hasPrefetchedCart.current = true
                   }  
                 }}
-                onClick={() => dispatch(setIsSideBarCollapsed(!isSideBarCollapsed))}
+                onClick={() => dispatch(setIsSideBarCollapsed(true))}
                 key={index}
                 to={to}
                 className={({ isActive }) =>
