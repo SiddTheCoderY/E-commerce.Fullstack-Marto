@@ -2,16 +2,30 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { X } from 'lucide-react'
+import { useDispatch } from "react-redux";
+import { toggleProductToCart } from "../features/cart/cartThunks";
+import { toast } from "react-hot-toast";
 
 
 const CartItem = ({ item }) => {
+
+  const dispatch = useDispatch();
+
+  const handleRemoveItemFromCart = async(productId) => {
+    try {
+      await dispatch(toggleProductToCart({productId})).unwrap()
+    } catch (error) {
+      toast.error('Unable to toggle')
+    }
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -30 }}
       transition={{ duration: 0.3 }}
-      className="bg-black/5 rounded-xl shadow-md p-4 mb-4 w-full max-w-6xl py-5 mx-auto flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 relative z-0"
+      className="bg-black/5 rounded-xl shadow-md p-4 mb-4 w-full max-w-7xl py-5 mx-auto flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 relative z-0"
     >
       {/* Left: Product Image */}
       <img
@@ -43,7 +57,10 @@ const CartItem = ({ item }) => {
 
       {/* Right: Quantity, Price, Actions */}
       <div className="flex flex-col items-center sm:items-end justify-between h-full gap-20 min-w-[90px]">
-        <button className="flex gap-1 items-center bg-red-100 text-red-600 text-xs py-1 px-2 cursor-pointer rounded-md hover:bg-red-200">
+        <button
+          onClick={() => handleRemoveItemFromCart(item.product._id)}
+          className="flex gap-1 items-center bg-red-100 text-red-600 text-xs py-1 px-2 cursor-pointer rounded-md hover:bg-red-200"
+        >
           <X width={14} />
         </button>
 

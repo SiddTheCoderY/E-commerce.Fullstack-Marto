@@ -22,6 +22,14 @@ export const toggleProductToCart = createAsyncThunk(
 
       const newProducts = response.data.data.cartItems.items;
       const toggledProduct = response.data.data.toggleProduct;
+
+      const {cartProducts} = getState().cart;
+      
+      const filteredProducts = cartProducts?.filter(
+        (item) => item.product._id !== toggledProduct._id
+      );
+
+      dispatch(setCartProducts(filteredProducts));
       
       dispatch(setCartProductsLength(newProducts.length));
       dispatch(setHasFetched(true))
