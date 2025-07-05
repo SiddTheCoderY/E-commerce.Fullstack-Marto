@@ -5,7 +5,8 @@ const initialState = {
   currentProduct: null,
   loading: false,
   error: null,
-  success: null
+  success: null,
+  filteredProducts : []
 }
 
 const productSlice = createSlice({
@@ -27,9 +28,12 @@ const productSlice = createSlice({
     setSuccess: (state, action) => {
       state.success = action.payload
     },
+    setFilteredProducts: (state, action) => {
+      state.filteredProducts = action.payload
+    }
   }
 })
 
-export const { setProducts, setCurrentProduct, setLoading, setError, setSuccess} = productSlice.actions
+export const { setProducts, setCurrentProduct, setLoading, setError, setSuccess, setFilteredProducts} = productSlice.actions
 
 export default productSlice.reducer

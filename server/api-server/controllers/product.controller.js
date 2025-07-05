@@ -278,4 +278,65 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   )
 })
 
+export const getFilteredProducts = asyncHandler(async (req, res) => {
+  const {
+    searchQuery,
+    category,
+    price,
+    rating,
+    brand,
+    sortBy,
+    page = 1,
+    itemsPerPage = 10,
+  } = req.query;
+
+  const filter = {};
+  if (searchQuery) {
+    filter.title = { $regex: searchQuery, $options: "i" }; // Case-insensitive search
+  }
+  if (category) {
+    filter.category = category;
+  }
+  if (price) {
+    const [minPrice, maxPrice] = price.split("-").map(Number);
+    filter.price = { $gte: minPrice, $lte: maxPrice };
+  }
+  if (rating) {
+    filter["ratings.average"] = { $gte: Number(rating) };
+  }
+  if (brand) {
+    filter.brand = brand;
+  }
+
+  // 🔃 Sort logic
+  let sortOptions = {};
+  if (sortBy === "price") sortOptions = { price: 1 }; // ascending
+  else if (sortBy === "rating") sortOptions = { rating: -1 }; // highest first
+  else if (sortBy === "newest") sortOptions = { createdAt: -1 };
+
+  // pagination
+  const skip = (page - 1) * itemsPerPage;
+  const totalProducts = await Product.countDocuments(filter);
+  const totalPages = Math.ceil(totalProducts / itemsPerPage);
+  
+
+  const products = await Product.find(filter)
+    .sort(sortOptions)
+    .skip((page - 1) * itemsPerPage)
+    .limit(Number(itemsPerPage));
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        products,
+        totalPages,
+        currentPage: Number(page),
+        totalProducts,
+      },
+      "Products fetched successfully"
+    )
+  );
+});
+
 export const getProductsByCategory = asyncHandler(async (req, res) => {})

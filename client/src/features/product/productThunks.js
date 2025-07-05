@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { setProducts, setCurrentProduct, setLoading, setError, setSuccess } from './productSlice'
+import { setProducts, setCurrentProduct, setLoading, setError, setSuccess, setFilteredProducts } from './productSlice'
 import axiosInstance from '../../utils/axiosInstance'
 
 export const createProduct = createAsyncThunk(
@@ -52,6 +52,31 @@ export const getAllProducts = createAsyncThunk(
     } catch (error) {
       console.log('err at geting products', error);
       dispatch(setError(error.response?.data?.message || 'Error occurred while fetching the products'));
+      return rejectWithValue(error.response?.data || error.message);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }
+)
+
+export const getFilteredProducts = createAsyncThunk(
+  'product/getFilteredProducts',
+  async (filter, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true))
+
+      const response = await axiosInstance.get('/product/get-filtered-products', {
+        params: filter
+      })
+
+      console.log('Filtered Products', response.data.data)
+      dispatch(setFilteredProducts(response.data.data.products))
+
+      return response.data.data
+      
+    } catch (error) {
+      console.log('err at getting filtered products', error);
+      dispatch(setError(error.response?.data?.message || 'Error occurred while fetching the filtered products'));
       return rejectWithValue(error.response?.data || error.message);
     } finally {
       dispatch(setLoading(false));

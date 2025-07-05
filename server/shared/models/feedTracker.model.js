@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const feedTrackerSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   details: {
-    searched: {
+    searchedContent: {
       type: String,
       default: ''
     },

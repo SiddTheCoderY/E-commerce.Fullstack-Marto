@@ -1,20 +1,20 @@
 import React, { useEffect } from "react";
 import PageBacker from "../components/PageBacker";
 import { useDispatch, useSelector } from "react-redux";
-import { getWishListProducts } from "../features/wishList/wishListThunk";
 import ProductCard from "../components/ProductCard";
 import { AnimatePresence, motion } from "framer-motion";
+import { getFilteredProducts } from "../features/product/productThunks";
 
 function SearchPage() {
+  
+  const { filteredProducts } = useSelector((state) => state.product);
+  const filter = useSelector((state) => state.localState.searchFilter);
+
   const dispatch = useDispatch();
-  const { wishListProducts, loading } = useSelector(
-    (state) => state.wishListProduct
-  );
-
   useEffect(() => {
-    dispatch(getWishListProducts());
-  }, [dispatch]);
-
+    dispatch(getFilteredProducts(filter));
+  }, [filter, dispatch]);
+  
   return (
     <div className="h-full w-full flex flex-col bg-slate-100/10">
       {/* Header */}
@@ -25,7 +25,7 @@ function SearchPage() {
       {/* Products */}
       <div className="px-1 w-full flex flex-col gap-3 mt-2">
         <div className="w-full px-2">
-          <span className="p-1 text-white highlight-tilt">Products</span>
+          <span className="p-1 text-white highlight-tilt">Searched Products</span>
         </div>
 
         <AnimatePresence>
@@ -36,8 +36,8 @@ function SearchPage() {
             transition={{ duration: 0.3 }}
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 p-5"
           >
-            {wishListProducts?.length > 0 ? (
-              [...wishListProducts]
+            {filteredProducts?.length > 0 ? (
+              [...filteredProducts]
                 .reverse()
                 .map((product) => (
                   <ProductCard
@@ -52,7 +52,7 @@ function SearchPage() {
                 animate={{ opacity: 1 }}
                 className=" text-gray-500 mt-10 w-[50vw] text-end"
               >
-                Your cart is empty.
+                Currently, No products found for your search.
               </motion.p>
             )}
           </motion.div>
