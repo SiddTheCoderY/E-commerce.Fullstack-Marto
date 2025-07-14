@@ -25,17 +25,22 @@ const CartItem = ({ item }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -30 }}
       transition={{ duration: 0.3 }}
-      className="bg-black/5 rounded-xl shadow-md p-4 mb-4 w-full max-w-7xl py-5 mx-auto flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 relative z-0"
+      className="bg-black/5 rounded-xl shadow-md p-2 mb-4 w-full max-w-7xl sm:py-5 mx-auto flex flex-row sm:items-start justify-between gap-4 sm:gap-6 relative z-0 sm:h-auto h-32"
     >
       {/* Left: Product Image */}
-      <img
-        src={item.product.images[0]}
-        alt="Product"
-        className="w-36 h-36 object-cover rounded-md border"
-      />
+      <div className="flex flex-col items-start h-full">
+        <img
+          src={item.product.images[0]}
+          alt="Product"
+          className="sm:w-36 w-24 sm:h-36 h-24 object-cover rounded-md border"
+        />
+        <h2 className="text-base text-[12px] sm:hidden font-semibold text-blue-800 w-[95%] truncate">
+          {item.product.title}
+        </h2>
+      </div>
 
       {/* Middle: Product Details */}
-      <div className="flex-1">
+      <div className="flex-1 hidden sm:block">
         <h2 className="text-base sm:text-lg font-semibold text-blue-800">
           {item.product.title}
         </h2>
@@ -56,16 +61,16 @@ const CartItem = ({ item }) => {
       </div>
 
       {/* Right: Quantity, Price, Actions */}
-      <div className="flex flex-col items-center sm:items-end justify-between h-full gap-20 min-w-[90px]">
+      <div className="flex flex-col items-center sm:items-end justify-end sm:h-full sm:gap-20 min-w-[90px] relative">
         <button
           onClick={() => handleRemoveItemFromCart(item.product._id)}
-          className="flex gap-1 items-center bg-red-100 text-red-600 text-xs py-1 px-2 cursor-pointer rounded-md hover:bg-red-200"
+          className="absolute top-2 right-2 sm:relative flex gap-1 items-center bg-red-100 text-red-600 text-xs py-1 px-2 cursor-pointer rounded-md hover:bg-red-200"
         >
           <X width={14} />
         </button>
 
-        <div className="flex items-center gap-2 px-2 py-1">
-          <div className="border p-1 rounded border-black/20">
+        <div className="flex flex-col sm:flex-row items-center gap-2 px-2 py-1">
+          <div className="border p-1 rounded border-black/20 text-[11px]">
             <button className="text-blue-600 font-bold px-2 cursor-pointer hover:scale-150 transition-all duration-100 ease-in">
               -
             </button>
@@ -74,7 +79,7 @@ const CartItem = ({ item }) => {
               +
             </button>
           </div>
-          <p className="text-blue-800 font-bold text-lg">
+          <p className="text-blue-800 font-bold sm:text-lg text-[12px]">
             Rs {item.product.price}
           </p>
         </div>

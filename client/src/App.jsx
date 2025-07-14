@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { getCurrentUser } from './features/user/userThunks';
 import { useDispatch, useSelector } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
+import { setIsSideBarCollapsed } from './features/localState/localStateSlice';
 
 import LoaderModal from './components/LoaderModal';
 import Login from './pages/Login';
@@ -23,6 +24,7 @@ import { getCartProducts } from './features/cart/cartThunks';
 import SearchPage from './pages/SearchPage';
 import ProductPage from './pages/ProductPage';
 import OrderPage from './pages/OrderPage';
+import SalesReportPage from './pages/SalesReportPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -31,6 +33,7 @@ function App() {
   React.useEffect(() => {
     dispatch(getCurrentUser());
     dispatch(getCartProducts());
+    localStorage.getItem('isSideBarCollapsed') === 'true' ? dispatch(setIsSideBarCollapsed(true)) : dispatch(setIsSideBarCollapsed(false));
   }, [dispatch]);
 
 
@@ -97,6 +100,7 @@ function App() {
           <Route path="products" element={<PrivateRoute><ProductPage /></PrivateRoute>} />
           <Route path="orders" element={<PrivateRoute><OrderPage /></PrivateRoute>} />
           <Route path="search" element={<PrivateRoute><SearchPage /></PrivateRoute>} />
+          <Route path="sales-report" element={<PrivateRoute><SalesReportPage /></PrivateRoute>} />
 
           {/* Add more pages as needed */}
         </Route>

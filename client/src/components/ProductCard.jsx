@@ -1,21 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
-  Star, StarHalf, StarOff, Heart, ShoppingCart, BadgePercent, CheckCircle, PencilLine
-} from 'lucide-react';
+  Star,
+  StarHalf,
+  StarOff,
+  Heart,
+  ShoppingCart,
+  BadgePercent,
+  CheckCircle,
+  PencilLine,
+} from "lucide-react";
 
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast'
-import { useSelector,useDispatch } from 'react-redux'
-import { toggleProductToWishList } from '../features/wishList/wishListThunk'
-import { toggleProductToCart } from '../features/cart/cartThunks';
-
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { useSelector, useDispatch } from "react-redux";
+import { toggleProductToWishList } from "../features/wishList/wishListThunk";
+import { toggleProductToCart } from "../features/cart/cartThunks";
 
 const ProductCard = ({ loading, product }) => {
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
-  const { user } = useSelector((state) => state.user)
-  const { cartProducts } = useSelector((state) => state.cart)
-  
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
+  const { screenView } = useSelector((state) => state.localState);
+  const { cartProducts } = useSelector((state) => state.cart);
+
+
   if (loading || !product) {
     return (
       <div className="bg-white rounded-xl shadow-md border p-3 max-w-xs w-full animate-pulse space-y-3">
@@ -59,70 +67,81 @@ const ProductCard = ({ loading, product }) => {
     const hasHalf = ratings?.average % 1 >= 0.5;
     const empty = 5 - full - (hasHalf ? 1 : 0);
 
-    for (let i = 0; i < full; i++) stars.push(<Star key={`f-${i}`} size={14} className="text-yellow-400" />);
-    if (hasHalf) stars.push(<StarHalf key="half" size={14} className="text-yellow-400" />);
-    for (let i = 0; i < empty; i++) stars.push(<StarOff key={`e-${i}`} size={14} className="text-gray-300" />);
+    for (let i = 0; i < full; i++)
+      stars.push(<Star key={`f-${i}`} size={14} className="text-yellow-400" />);
+    if (hasHalf)
+      stars.push(<StarHalf key="half" size={14} className="text-yellow-400" />);
+    for (let i = 0; i < empty; i++)
+      stars.push(
+        <StarOff key={`e-${i}`} size={14} className="text-gray-300" />
+      );
     return stars;
   };
 
-  const nextImage = () => setCurrentImageIndex((currentImageIndex + 1) % images.length);
-  const prevImage = () => setCurrentImageIndex((currentImageIndex - 1 + images.length) % images.length);
+  const nextImage = () =>
+    setCurrentImageIndex((currentImageIndex + 1) % images.length);
+  const prevImage = () =>
+    setCurrentImageIndex(
+      (currentImageIndex - 1 + images.length) % images.length
+    );
 
   const [wishlist, setWishlist] = useState(() => {
     const initial = {};
     if (user?.wishListProducts?.length) {
-      user.wishListProducts.forEach(id => {
+      user.wishListProducts.forEach((id) => {
         initial[id] = true;
       });
     }
     return initial;
   });
 
-  const toggleWishlist = async(productId) => {
+  const toggleWishlist = async (productId) => {
     setWishlist((prev) => ({
       ...prev,
       [productId]: !prev[productId],
     }));
     try {
-      await dispatch(toggleProductToWishList({productId})).unwrap()
-    } catch (error) {
-      
-    }
+      await dispatch(toggleProductToWishList({ productId })).unwrap();
+    } catch (error) {}
   };
-  
+
   const [cartStatus, setCartStatus] = useState(() => {
     const initial = {};
     if (cartProducts?.length) {
-      cartProducts?.forEach(item => {
+      cartProducts?.forEach((item) => {
         initial[item.product?._id?.toString()] = true;
       });
     }
     return initial;
   });
 
-
-  const toggleCart = async(productId) => {
-    console.log('toggling product', productId)
+  const toggleCart = async (productId) => {
+    console.log("toggling product", productId);
     setCartStatus((prev) => ({
       ...prev,
       [productId]: !prev[productId],
     }));
-    
+
     try {
-      await dispatch(toggleProductToCart({productId})).unwrap()
+      await dispatch(toggleProductToCart({ productId })).unwrap();
     } catch (error) {
-      toast.error('Unable to toggle')
+      toast.error("Unable to toggle");
     }
   };
-  
-  
+
   return (
     <div
       key={product._id}
-      className="relative bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-blue-300 p-3 max-w-xs w-full"
+      className={`relative bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-blue-300 p-3 max-w-xs ${
+        screenView === "mobile" ? "mb-4 w-[40vw]" : "mb-0 w-full"
+      }`}
     >
       {/* Image Carousel */}
-      <div className="relative w-full h-40 overflow-hidden rounded-lg mb-3 group">
+      <div
+        className={`relative w-full ${
+          screenView === "mobile" ? "h-32" : "h-52"
+        } overflow-hidden rounded-lg mb-3 group`}
+      >
         <img
           src={images[currentImageIndex]}
           alt={title}
@@ -190,7 +209,7 @@ const ProductCard = ({ loading, product }) => {
       </div>
 
       {/* Info */}
-      <div className="space-y-1.5">
+      <div className={`space-y-1.5 ${screenView === "mobile" ? "hidden" : ""}`}>
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-gray-800 line-clamp-2">
             {title}
@@ -231,8 +250,8 @@ const ProductCard = ({ loading, product }) => {
       </div>
 
       {/* Actions */}
-      <div className="mt-3 flex justify-between items-center">
-        <span className="text-xs text-gray-400">Stock: {stock}</span>
+      <div className="mt-3 flex sm:justify-between justify-end items-center">
+        <span className="font-semibold sm:block hidden text-xs text-gray-400">Stock: {stock}</span>
         {cartProducts && (
           <div className="flex gap-1.5">
             {user?._id !== product.seller ? (
@@ -242,7 +261,7 @@ const ProductCard = ({ loading, product }) => {
                     if (user) {
                       toggleCart(product._id);
                     } else {
-                      toast.error("Please login first !")
+                      toast.error("Please login first !");
                     }
                   }}
                   className={`
@@ -291,7 +310,6 @@ const ProductCard = ({ loading, product }) => {
             )}
           </div>
         )}
-       
       </div>
     </div>
   );

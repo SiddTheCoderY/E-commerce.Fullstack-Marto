@@ -1,9 +1,9 @@
-import React, { useState, useEffect,useRef } from 'react';
-import { NavLink } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { logoutUser } from '../features/auth/authThunks';
-import { useNavigate } from 'react-router-dom';
-import { getAllStores } from '../features/store/storeThunks';
+import React, { useState, useEffect, useRef } from "react";
+import { NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser } from "../features/auth/authThunks";
+import { useNavigate } from "react-router-dom";
+import { getAllStores } from "../features/store/storeThunks";
 import {
   LayoutDashboard,
   Trophy,
@@ -20,86 +20,88 @@ import {
   Store,
   AlignJustify,
   Slack,
-  Speech
-} from 'lucide-react';
+  Speech,
+} from "lucide-react";
 
-import Lottie from 'lottie-react';
-import CompanyLogo from '../assets/animated-logo-cart.json';
-import BecomeSeller from '../assets/Seller-Animation.json'
-import { setIsSideBarCollapsed } from '../features/localState/localStateSlice';
-import Confirmer from './Confirmer';
-import { getCartProducts } from '../features/cart/cartThunks';
+import Lottie from "lottie-react";
+import CompanyLogo from "../assets/animated-logo-cart.json";
+import BecomeSeller from "../assets/Seller-Animation.json";
+import { setIsSideBarCollapsed } from "../features/localState/localStateSlice";
+import Confirmer from "./Confirmer";
+import { getCartProducts } from "../features/cart/cartThunks";
 
 const Sidebar = () => {
   // for pre-fectching the data from sidebar
-  const hasPrefetchedStores = useRef(false)
+  const hasPrefetchedStores = useRef(false);
   const { hasFetched } = useSelector((state) => state.store);
 
-  const hasPrefetchedCart = useRef(false)
+  const hasPrefetchedCart = useRef(false);
   const { hasCartFetched } = useSelector((state) => state.cart);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.user);
-  const {isSideBarCollapsed} = useSelector((state) => state.localState)
-  const dispatch = useDispatch()
+  const { isSideBarCollapsed } = useSelector((state) => state.localState);
+  const dispatch = useDispatch();
 
   const [isMobile, setIsMobile] = useState(false);
-  const [isLogoutConfirmerOn,setIsLogoutConfirmerOn] = useState(false)
+  const [isLogoutConfirmerOn, setIsLogoutConfirmerOn] = useState(false);
   const isOpen = !isSideBarCollapsed;
-  
+
   const toggleSidebar = () => {
+    localStorage.setItem("isSideBarCollapsed", !isSideBarCollapsed);
     dispatch(setIsSideBarCollapsed(!isSideBarCollapsed));
   };
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const baseLinks = [
-    { to: '/', icon: LayoutDashboard, label: 'Home' },
-    { to: '/cart', icon: ShoppingBag, label: 'Cart' },
-    { to: '/wishlist', icon: Heart, label: 'Wishlist' },
-    { to: '/orders', icon: ShoppingCart, label: 'Orders' },
-    { to: '/messages', icon: MessageCircle, label: 'Messages' },
+    { to: "/", icon: LayoutDashboard, label: "Home" },
+    { to: "/cart", icon: ShoppingBag, label: "Cart" },
+    { to: "/wishlist", icon: Heart, label: "Wishlist" },
+    { to: "/orders", icon: ShoppingCart, label: "Orders" },
+    { to: "/messages", icon: MessageCircle, label: "Messages" },
   ];
 
   const sellerLinks = [
-    { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
-    { to: '/orders', icon: ShoppingCart, label: 'Orders' },
-    { to: '/products', icon: Box, label: 'Products' },
-    { to: '/stores', icon: Store , label: 'Stores' },
-    { to: '/sales-report', icon: BarChart2, label: 'Sales Report' },
+    { to: "/leaderboard", icon: Trophy, label: "Leaderboard" },
+    { to: "/orders", icon: ShoppingCart, label: "Orders" },
+    { to: "/products", icon: Box, label: "Products" },
+    { to: "/stores", icon: Store, label: "Stores" },
+    { to: "/sales-report", icon: BarChart2, label: "Sales Report" },
   ];
 
-  const navItems = user?.role === 'seller' ? [...baseLinks, ...sellerLinks] : baseLinks;
-
+  const navItems =
+    user?.role === "seller" ? [...baseLinks, ...sellerLinks] : baseLinks;
 
   const handleLogout = () => {
     dispatch(logoutUser());
-    navigate('/');
+    navigate("/");
   };
-
-
 
   return (
     <>
-  
       {/* Sidebar */}
       <div
         className={`fixed top-0 left-0 h-full z-40 transition-all duration-300 bg-white shadow-md flex flex-col justify-between
-          ${isOpen ? 'w-[250px]' : 'w-[75px]'}`}
+          ${isOpen ? "w-[250px]" : "w-[75px]"}`}
       >
         {/* Top Section */}
         <div className="p-4 relative">
           {/* Logo and toggle */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {!(!isOpen) && (
+              {!!isOpen && (
                 <>
-                  <Lottie animationData={CompanyLogo} loop className="w-8 h-8" />
+                  <Lottie
+                    animationData={CompanyLogo}
+                    loop
+                    className="w-8 h-8"
+                  />
                   <h1 className="text-lg font-bold text-blue-600">Anbari</h1>
                 </>
               )}
@@ -117,63 +119,69 @@ const Sidebar = () => {
           {/* Nav Items */}
           <nav className={`mt-6 flex flex-col gap-1`}>
             {navItems.map(({ to, icon: Icon, label }, index) => {
-              const isStoresLink = to === '/stores';
+              const isStoresLink = to === "/stores";
               const isCartLink = to === "/cart";
               return (
-              <NavLink
-                onMouseEnter={() => {
-                  if (isStoresLink && (!hasPrefetchedStores.current || !hasFetched)) {
-                    dispatch(getAllStores());
-                    console.log("Data Fetched")
-                    hasPrefetchedStores.current = true;
+                <NavLink
+                  onMouseEnter={() => {
+                    if (
+                      isStoresLink &&
+                      (!hasPrefetchedStores.current || !hasFetched)
+                    ) {
+                      dispatch(getAllStores());
+                      console.log("Data Fetched");
+                      hasPrefetchedStores.current = true;
                     }
-                   if (isCartLink && (!hasPrefetchedCart.current || !hasCartFetched)) {
-                      dispatch(getCartProducts())
-                      hasPrefetchedCart.current = true
-                  }  
-                }}
-                onClick={() => dispatch(setIsSideBarCollapsed(true))}
-                key={index}
-                to={to}
-                className={({ isActive }) =>
-                  `group flex items-center gap-3 px-3 py-2 rounded-md text-[12px] font-medium transition-all relative ${
-                    isActive
-                      ? 'bg-blue-100 text-blue-600'
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-100'
-                  }`
-                }
-              >
-                <Icon className="w-[18px] h-[18px]" />
-                {isOpen ? (
-                  <span>{label}</span>
-                ) : (
-                  <span className="absolute left-full ml-2 bg-blue-950 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50">
-                    {label}
-                  </span>
-                )}
-              </NavLink>
-            )})}
+                    if (
+                      isCartLink &&
+                      (!hasPrefetchedCart.current || !hasCartFetched)
+                    ) {
+                      dispatch(getCartProducts());
+                      hasPrefetchedCart.current = true;
+                    }
+                  }}
+                  onClick={() => {
+                    localStorage.setItem("isSideBarCollapsed", true);
+                    dispatch(setIsSideBarCollapsed(true));
+                  }}
+                  key={index}
+                  to={to}
+                  className={({ isActive }) =>
+                    `group flex items-center gap-3 px-3 py-2 rounded-md text-[12px] font-medium transition-all relative ${
+                      isActive
+                        ? "bg-blue-100 text-blue-600"
+                        : "text-gray-700 hover:text-blue-600 hover:bg-gray-100"
+                    }`
+                  }
+                >
+                  <Icon className="w-[18px] h-[18px]" />
+                  {isOpen ? (
+                    <span>{label}</span>
+                  ) : (
+                    <span className="absolute left-full ml-2 bg-blue-950 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                      {label}
+                    </span>
+                  )}
+                </NavLink>
+              );
+            })}
           </nav>
         </div>
 
         {/* Bottom Section */}
         <div className="px-4 py-2 border-t border-gray-200 mb-3">
           <div className="flex flex-col gap-2">
-
-          {(user && user.role === 'consumer') && (
-              <div
-             
-              className=" cursor-pointer group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-red-50 transition-colors relative"
-            >
-             <Speech  className="w-[18px] h-[18px]" />
-              {isOpen ? (
-                <span>Become Seller</span>
-              ) : (
-                <span className="absolute left-full ml-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50">
-                  Become Seller
-                </span>
-              )}
-            </div>
+            {user && user.role === "consumer" && (
+              <div className=" cursor-pointer group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-red-50 transition-colors relative">
+                <Speech className="w-[18px] h-[18px]" />
+                {isOpen ? (
+                  <span>Become Seller</span>
+                ) : (
+                  <span className="absolute left-full ml-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                    Become Seller
+                  </span>
+                )}
+              </div>
             )}
 
             <NavLink
@@ -181,8 +189,8 @@ const Sidebar = () => {
               className={({ isActive }) =>
                 `group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors relative ${
                   isActive
-                    ? 'bg-blue-100 text-blue-600'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-100'
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-100"
                 }`
               }
             >
@@ -198,26 +206,29 @@ const Sidebar = () => {
 
             {user && (
               <div
-              onClick={() => setIsLogoutConfirmerOn(true)}
-              className=" cursor-pointer group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors relative"
-            >
-              <LogOut className="w-[18px] h-[18px]" />
-              {isOpen ? (
-                <span>Logout</span>
-              ) : (
-                <span className="absolute left-full ml-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50">
-                  Logout
-                </span>
-              )}
-            </div>
+                onClick={() => setIsLogoutConfirmerOn(true)}
+                className=" cursor-pointer group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors relative"
+              >
+                <LogOut className="w-[18px] h-[18px]" />
+                {isOpen ? (
+                  <span>Logout</span>
+                ) : (
+                  <span className="absolute left-full ml-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                    Logout
+                  </span>
+                )}
+              </div>
             )}
 
-              {isLogoutConfirmerOn && (
-                <Confirmer confirmatoryText={'Are You sure want to Logout ?'} action={handleLogout} onClose={() => setIsLogoutConfirmerOn(false)}  />
-                )}
+            {isLogoutConfirmerOn && (
+              <Confirmer
+                confirmatoryText={"Are You sure want to Logout ?"}
+                action={handleLogout}
+                onClose={() => setIsLogoutConfirmerOn(false)}
+              />
+            )}
           </div>
         </div>
-
       </div>
     </>
   );

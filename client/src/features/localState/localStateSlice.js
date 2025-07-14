@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     isSideBarCollapsed: false,
+    screenView : "desktop", // or "mobile"
     // product search filter state
     searchFilter: {
         searchQuery: "",
@@ -22,7 +23,7 @@ const localStateSlice = createSlice({
     name : 'localState',
     initialState,
     reducers : {
-        setIsSideBarCollapsed : (state,action) => {
+        setIsSideBarCollapsed: (state, action) => {
             state.isSideBarCollapsed = action.payload
         },
         setSearchFilter: (state, action) => {
@@ -46,11 +47,14 @@ const localStateSlice = createSlice({
                 error: null
             }
         },
+        setScreenView: (state, action) => {
+            state.screenView = action.payload;
+        }
 
     }
     
 })
 
-export const {setIsSideBarCollapsed,setSearchFilter,resetSearchFilter} = localStateSlice.actions
+export const {setIsSideBarCollapsed,setSearchFilter,resetSearchFilter,setScreenView} = localStateSlice.actions
 
 export default localStateSlice.reducer
