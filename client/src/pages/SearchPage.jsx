@@ -121,7 +121,7 @@ function SearchPage() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, y: -30 }}
             transition={{ duration: 0.3 }}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 p-5"
+            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 p-5"
           >
             {loading ? (
               // Show 8 skeletons

@@ -75,3 +75,50 @@ export const getCartProducts = asyncHandler(async (req, res) => {
     new ApiResponse(200, sortedItems, 'Cart products fetched successfully')
   );
 });
+
+export const updateCartProductCount = asyncHandler(async (req, res) => {
+  const { productId, number } = req.body;
+
+  if (number <= 0) {
+    throw new ApiError(400, 'Product number must be greater than 0');
+  }
+
+  if (!productId) {
+    throw new ApiError(400, 'Product ID is required');
+  }
+
+  const product = await Product.findById(productId);
+  if (!product) {
+    throw new ApiError(404, 'Product not found');
+  }
+
+  const cart = await Cart.findOne({ user: req.user._id }).populate('items.product').sort({ createdAt: -1 });
+  if (!cart) {
+    throw new ApiError(404, 'Cart not found');
+  }
+
+  let found = false;
+  
+ 
+  cart.items = cart.items.map((item) =>{
+    if (item.product._id.toString() === productId.toString()) {
+      item.quantity = number;
+      found = true;
+    }
+    return item;
+  });
+
+
+
+  if (!found) {
+    throw new ApiError(404, 'Product not found in cart');
+  }
+
+  await cart.save();
+
+  const sortedItems = cart.items.sort((a, b) => {
+    return new Date(b.product.createdAt) - new Date(a.product.createdAt);
+  });
+
+  res.status(200).json(new ApiResponse(200,sortedItems,'Product quantity updated successfully'));
+});

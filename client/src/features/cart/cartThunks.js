@@ -52,13 +52,37 @@ export const getCartProducts = createAsyncThunk(
 
       const response = await axiosInstance.get("/cart/get-cart-products");
       const cartProducts = response.data.data;
+      console.log("Cart Products", cartProducts);
       dispatch(setCartProductsLength(cartProducts.length));
       dispatch(setCartProducts(cartProducts));
-      console.log("Cart Prdoct fetched", cartProducts);
+      
 
       return cartProducts;
     } catch (error) {
       console.log("err at getting cart prodocts", error);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }
+);
+
+export const updateCartProductCount = createAsyncThunk(
+  "cart/updateCartProductCount",
+  async ({ productId, number }, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+
+      const response = await axiosInstance.post(
+        "/cart/update-cart-product-count",
+        { productId, number }
+      );
+
+      console.log("Updated Cart",response.data.data);
+      dispatch(setCartProducts(response.data.data));
+      dispatch(setSuccess(response.data.data));
+      return response.data.data;
+    } catch (error) {
+      console.log("err at updating cart prodocts", error);
     } finally {
       dispatch(setLoading(false));
     }

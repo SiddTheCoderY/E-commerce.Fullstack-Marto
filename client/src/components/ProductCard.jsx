@@ -10,7 +10,7 @@ import {
   PencilLine,
 } from "lucide-react";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleProductToWishList } from "../features/wishList/wishListThunk";
@@ -19,10 +19,10 @@ import { toggleProductToCart } from "../features/cart/cartThunks";
 const ProductCard = ({ loading, product }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
   const { user } = useSelector((state) => state.user);
   const { screenView } = useSelector((state) => state.localState);
   const { cartProducts } = useSelector((state) => state.cart);
-
 
   if (loading || !product) {
     return (
@@ -68,9 +68,9 @@ const ProductCard = ({ loading, product }) => {
     const empty = 5 - full - (hasHalf ? 1 : 0);
 
     for (let i = 0; i < full; i++)
-      stars.push(<Star key={`f-${i}`} size={14} className="text-yellow-400" />);
+      stars.push(<Star key={`f-${i}`} size={14} className="text-yellow-400 fill-yellow-400" />);
     if (hasHalf)
-      stars.push(<StarHalf key="half" size={14} className="text-yellow-400" />);
+      stars.push(<StarHalf key="half" size={14} className="text-yellow-400 fill-yellow-600" />);
     for (let i = 0; i < empty; i++)
       stars.push(
         <StarOff key={`e-${i}`} size={14} className="text-gray-300" />
@@ -129,190 +129,120 @@ const ProductCard = ({ loading, product }) => {
     }
   };
 
-  return (
+  const handleOpenProductShowCase = () => {
+    navigate(`/product/${product._id}`, {
+      state: {
+        backgroundLocation: location,
+      },
+    });
+  };
+
+ return (
+  <div
+    key={product._id}
+    className={`relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-black/40 p-2 max-w-xs ${
+      screenView === "mobile" ? "mb-3 w-[42vw]" : "mb-0 w-full"
+    }`}
+  >
+    {/* Smaller Image */}
     <div
-      key={product._id}
-      className={`relative bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-blue-300 p-3 max-w-xs ${
-        screenView === "mobile" ? "mb-4 w-[40vw]" : "mb-0 w-full"
-      }`}
+      className={`relative w-full ${
+        screenView === "mobile" ? "h-28" : "h-40"
+      } overflow-hidden rounded-md mb-2 group`}
     >
-      {/* Image Carousel */}
-      <div
-        className={`relative w-full ${
-          screenView === "mobile" ? "h-32" : "h-52"
-        } overflow-hidden rounded-lg mb-3 group`}
-      >
-        <img
-          src={images[currentImageIndex]}
-          alt={title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+      <img
+        src={images[currentImageIndex]}
+        alt={title}
+        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
 
-        {/* Prev/Next hover controls */}
-        {images.length > 1 && (
-          <>
-            <button
-              onClick={prevImage}
-              className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white/70 p-1 rounded-full text-gray-700 hover:bg-white"
-            >
-              ‹
-            </button>
-            <button
-              onClick={nextImage}
-              className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white/70 p-1 rounded-full text-gray-700 hover:bg-white"
-            >
-              ›
-            </button>
-          </>
-        )}
-
-        {/* Wishlist Icon */}
-        {(!user || user?._id !== product?.seller) && (
-          <button
-            onClick={() => {
-              if (user) {
-                toggleWishlist(product._id);
-              } else {
-                toast.error("Please Login First");
-                navigate("/");
-              }
-            }}
-            className={`absolute top-2 right-2 p-1 rounded-full shadow-md transition-all duration-300
-              ${
-                wishlist[product._id]
-                  ? "bg-red-100 text-red-600 scale-110"
-                  : "bg-white text-blue-600 hover:bg-blue-100"
-              }`}
-          >
-            <Heart
-              size={18}
-              className={`transition-transform duration-300 ${
-                wishlist[product._id]
-                  ? "fill-red-600 text-red-600 heart-bounce"
-                  : ""
-              }`}
-            />
-          </button>
-        )}
-
-        {/* Stock badge */}
-        <span
-          className={`absolute bottom-2 left-2 text-[10px] px-2 py-0.5 rounded-full font-semibold
-          ${
-            stock > 0
-              ? "bg-green-300 text-green-950"
-              : "bg-red-100 text-red-600"
-          }`}
+      {/* Minimal Wishlist Icon */}
+      {(!user || user?._id !== product?.seller) && (
+        <button
+          onClick={() => {
+            if (user) {
+              toggleWishlist(product._id);
+            } else {
+              toast.error("Please Login First");
+              navigate("/");
+            }
+          }}
+          className={`absolute top-1 right-1 p-0.5 rounded-full shadow transition cursor-pointer
+            ${
+              wishlist[product._id]
+                ? "bg-red-100 text-red-600"
+                : "bg-white text-blue-600 hover:bg-blue-100"
+            }`}
         >
-          {stock > 0 ? "In Stock" : "Out of Stock"}
-        </span>
-      </div>
+          <Heart size={18} className={wishlist[product._id] ? "fill-red-600" : ""} />
+        </button>
+      )}
+    </div>
 
-      {/* Info */}
-      <div className={`space-y-1.5 ${screenView === "mobile" ? "hidden" : ""}`}>
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-800 line-clamp-2">
-            {title}
-          </h2>
-          {isFeatured && (
-            <span className="text-[10px] text-blue-600 font-semibold flex items-center gap-0.5">
-              <CheckCircle size={12} /> Featured
-            </span>
-          )}
-        </div>
+    {/* Minimal Info */}
+    <div onClick={handleOpenProductShowCase} className={`space-y-1 cursor-pointer`}>
+      <h2 className="text-sm font-semibold text-gray-800 line-clamp-2">{title}</h2>
 
-        <div className="text-[11px] text-gray-400 line-clamp-1">{category}</div>
-
-        <div className="flex items-center gap-1">
-          <p className="text-base font-bold text-blue-600">Rs {price}</p>
-          {discount > 0 && (
-            <div className="flex items-center text-xs text-red-500 line-through">
-              <BadgePercent size={12} className="mr-0.5" /> {discount}%
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center gap-1">
-          {renderStars()}
-          <span className="text-xs text-gray-500 ml-1">({ratings?.count})</span>
-        </div>
-
-        <div className="flex flex-wrap gap-1 mt-1">
-          {features?.slice(0, 3).map((f, i) => (
-            <span
-              key={i}
-              className="bg-blue-50 text-blue-600 text-[10px] px-2 py-[2px] rounded-full"
-            >
-              {f}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="mt-3 flex sm:justify-between justify-end items-center">
-        <span className="font-semibold sm:block hidden text-xs text-gray-400">Stock: {stock}</span>
-        {cartProducts && (
-          <div className="flex gap-1.5">
-            {user?._id !== product.seller ? (
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    if (user) {
-                      toggleCart(product._id);
-                    } else {
-                      toast.error("Please login first !");
-                    }
-                  }}
-                  className={`
-                  text-[12px]
-                  group flex items-center gap-2 transition-all duration-300 ease-in-out
-                  rounded-full bg-gradient-to-r  text-white
-                  overflow-hidden px-3 py-1 h-8 cursor-pointer
-                  ${
-                    cartStatus[product._id?.toString()]
-                      ? "w-34 from-blue-500 to-blue-800"
-                      : "w-10 group-hover:w-34 from-blue-900 to-blue-950"
-                  }
-                `}
-                >
-                  {/* Icon */}
-                  <div className="z-10 flex-shrink-0">
-                    {cartStatus[product._id?.toString()] ? (
-                      <CheckCircle size={18} />
-                    ) : (
-                      <ShoppingCart size={18} />
-                    )}
-                  </div>
-
-                  {/* Sliding Text */}
-                  <span
-                    className={`
-                    text-[12.5px] font-medium whitespace-nowrap transition-all duration-300
-                    transform
-                    ${
-                      cartStatus[product._id?.toString()]
-                        ? "opacity-100 translate-x-0"
-                        : "opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0"
-                    }
-                  `}
-                  >
-                    {cartStatus[product._id?.toString()]
-                      ? "Added to Cart"
-                      : "Add to Cart"}
-                  </span>
-                </button>
-              </div>
-            ) : (
-              <button className="cursor-pointer hover:scale-110 p-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition flex flex-col">
-                <PencilLine size={16} />
-              </button>
-            )}
+        <p className="text-[15px] font-bold text-blue-600">Rs {price - (price * discount / 100)}</p>
+      <div className="flex items-center gap-1">
+        <p className={`text-[13.5px] font-bold text-blue-600/50 line-through ${discount > 0 ? "" : "hidden"}`}>Rs {price}</p>
+        {discount > 0 && (
+          <div className="flex items-center text-[16px] text-red-500 ">
+            <div><BadgePercent size={11} className="mr-0.5 mt-0.5" /></div>
+            <div> {discount}%</div>
           </div>
         )}
       </div>
+
+      <div className="flex items-center gap-0.5">
+        {renderStars()} {/* Already using size={14} */}
+        <span className="text-[10px] text-gray-400 ml-1">({ratings?.count})</span>
+      </div>
     </div>
-  );
+
+    {/* Minimal Actions */}
+    <div className="mt-2 flex justify-end items-center">
+      <div className="flex gap-1">
+        {user?._id !== product.seller ? (
+          <button
+            type="button"
+            onClick={() => {
+              if (user) {
+                toggleCart(product._id);
+              } else {
+                toast.error("Please login first !");
+              }
+            }}
+            className={`
+              group flex items-center gap-1 rounded-full px-2 py-1 h-7 text-white text-[11px]
+              transition-all duration-300 cursor-pointer
+              ${
+                cartStatus[product._id?.toString()]
+                  ? "bg-blue-600"
+                  : "bg-blue-900 hover:bg-blue-800"
+              }
+            `}
+          >
+            {cartStatus[product._id?.toString()] ? (
+              <CheckCircle size={14} />
+            ) : (
+              <ShoppingCart size={14} />
+            )}
+            <span className="hidden sm:inline">
+              {cartStatus[product._id?.toString()]
+                ? "Added"
+                : "Add"}
+            </span>
+          </button>
+        ) : (
+          <button className="p-1 cursor-pointer rounded-full bg-blue-600 text-white hover:bg-blue-700 transition">
+            <PencilLine size={16} />
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+);
 };
 
 export default ProductCard;

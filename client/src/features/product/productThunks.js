@@ -37,14 +37,15 @@ export const createProduct = createAsyncThunk(
 
 export const getAllProducts = createAsyncThunk(
   'product/getAllProducts',
-  async (_, { dispatch, rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue, getState }) => {
     try {
       dispatch(setLoading(true))
 
       const response = await axiosInstance.get('/product/get-all-products')
-
+      const { cartProducts } = getState().cart
+      console.log("Cart Product before fetchig yhe normal prod", cartProducts)
       // console.log('All Products', response.data.data)
-      dispatch(setProducts(response.data.data))
+      dispatch(setProducts(response.data.data,...cartProducts))
 
 
       return response.data.data

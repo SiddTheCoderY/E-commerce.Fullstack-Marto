@@ -71,7 +71,7 @@ const Header = () => {
   return (
     <header className="bg-slate-100/10 shadow-md sm:pl-4 flex justify-between items-center h-14 w-full relative">
       {/* === LEFT: Logo Section === */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 pl-2 sm:pl-0">
         {isSideBarCollapsed && (
           <>
             <Lottie animationData={CompanyLogo} loop className="w-8 h-8" />
@@ -80,10 +80,12 @@ const Header = () => {
         )}
       </div>
 
-      <div className="flex items-center gap-0 sm:hidden absolute left-2">
-        <Lottie animationData={CompanyLogo} loop className="w-8 h-8" />
-        <h1 className="text-lg font-bold text-blue-600">Anbari</h1>
-      </div>
+      {screenView === "mobile" && !isSideBarCollapsed && (
+        <div className="flex items-center gap-0 sm:hidden absolute left-2">
+          <Lottie animationData={CompanyLogo} loop className="w-8 h-8" />
+          <h1 className="text-lg font-bold text-blue-600">Anbari</h1>
+        </div>
+      )}
 
       {/* Middle Control Search */}
       {screenView === "desktop" && <SearchBar />}

@@ -3,13 +3,33 @@ import React from "react";
 import { motion } from "framer-motion";
 import { X } from 'lucide-react'
 import { useDispatch } from "react-redux";
-import { toggleProductToCart } from "../features/cart/cartThunks";
+import { toggleProductToCart , updateCartProductCount} from "../features/cart/cartThunks";
 import { toast } from "react-hot-toast";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 const CartItem = ({ item }) => {
-
+  const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
+
+  const handleProductCount = async (item, number) => {
+    console.log("number testing", number)
+  
+    console.log("Number Passed", number)
+    const count = item.quantity + number
+
+    if(count <= 0) return
+
+    try {
+      await dispatch(updateCartProductCount({ productId: item.product._id, number: count })).unwrap()
+    } catch (error) {
+      toast.error('Unable to toggle')
+    }
+  };
+
+  const increaseProductCount = (item) => handleProductCount(item, 1)
+  const decreaseProductCount = (item) => handleProductCount(item, -1)
 
   const handleRemoveItemFromCart = async(productId) => {
     try {
@@ -19,8 +39,17 @@ const CartItem = ({ item }) => {
     }
   }
 
+  const handleOpenProductShowCase = (product) => {
+    navigate(`/product/${product._id}`, {
+      state: {
+        backgroundLocation: location,
+      },
+    });
+  };
+
   return (
     <motion.div
+      key={item._id}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -30 }}
@@ -40,7 +69,7 @@ const CartItem = ({ item }) => {
       </div>
 
       {/* Middle: Product Details */}
-      <div className="flex-1 hidden sm:block">
+      <div  onClick={() => handleOpenProductShowCase(item.product)} className="flex-1 hidden sm:block cursor-pointer">
         <h2 className="text-base sm:text-lg font-semibold text-blue-800">
           {item.product.title}
         </h2>
@@ -58,6 +87,9 @@ const CartItem = ({ item }) => {
         <p className="text-sm text-gray-500 mt-2">
           Stock: <span className="text-green-600">{item.product.stock}</span>
         </p>
+        <p className="text-sm text-gray-500 mt-2">
+          <span onClick={() => handleOpenProductShowCase(item.product)} className="text-blue-600 hover:underline cursor-pointer">More Deatils</span>
+        </p>
       </div>
 
       {/* Right: Quantity, Price, Actions */}
@@ -71,16 +103,16 @@ const CartItem = ({ item }) => {
 
         <div className="flex flex-col sm:flex-row items-center gap-2 px-2 py-1">
           <div className="border p-1 rounded border-black/20 text-[11px]">
-            <button className="text-blue-600 font-bold px-2 cursor-pointer hover:scale-150 transition-all duration-100 ease-in">
+            <button onClick={() => decreaseProductCount(item)} className="text-blue-600 font-bold px-2 cursor-pointer hover:scale-150 transition-all duration-100 ease-in">
               -
             </button>
             <span className="px-2">{item.quantity}</span>
-            <button className="text-blue-600 font-bold px-2 cursor-pointer hover:scale-150 transition-all duration-100 ease-in">
+            <button onClick={() => increaseProductCount(item)} className="text-blue-600 font-bold px-2 cursor-pointer hover:scale-150 transition-all duration-100 ease-in">
               +
             </button>
           </div>
-          <p className="text-blue-800 font-bold sm:text-lg text-[12px]">
-            Rs {item.product.price}
+          <p className="text-blue-800 font-bold sm:text-[14px] text-[12px]">
+            Rs {(item.product.price * item.quantity).toFixed(2)}
           </p>
         </div>
       </div>
