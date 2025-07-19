@@ -76,6 +76,10 @@ const productSchema = new mongoose.Schema({
       type: [String], // Array of strings
       //  "features": ["Bluetooth 5.0", "Noise Cancellation", "20-Hour Battery", "Water Resistant"]
       default: []     // Optional: start with empty array
+  },
+    warranty: {
+      type: Boolean,
+      default: false
     }
   }, { timestamps: true });
 

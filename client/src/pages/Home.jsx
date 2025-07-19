@@ -37,7 +37,7 @@ function Home() {
           <div className="w-full p-2 mb-10">
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
               {products &&
-                products?.map((product) => (
+                products?.length > 0 && [...products].reverse().map((product) => (
                   <ProductCard
                     key={product._id}
                     product={product}

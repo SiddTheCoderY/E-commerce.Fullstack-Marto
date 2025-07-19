@@ -10,6 +10,7 @@ import {
   toggleProductToWishList,
   getAllProducts,
   getFilteredProducts,
+  getProductById,
 } from '../controllers/product.controller.js'
 
 const router = Router()
@@ -39,6 +40,10 @@ router.route("/get-all-products").get(getAllProducts)
 router.route('/get-filtered-products').get(
   verifyJWT,
   getFilteredProducts
+)
+
+router.route('/get-product-by-id').get(
+  getProductById
 )
 
 export default router

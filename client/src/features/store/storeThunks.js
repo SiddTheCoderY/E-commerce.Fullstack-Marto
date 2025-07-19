@@ -12,7 +12,8 @@ export const getAllStores = createAsyncThunk(
 
       const response = await axiosInstance.get('/store/get-all-stores');
       const stores = response.data.data;
-
+      console.log("Stores", stores);
+  
       dispatch(setStores(stores));
       dispatch(setHasFetched(true))
 
@@ -28,7 +29,7 @@ export const getAllStores = createAsyncThunk(
         localStorage.setItem('selectedStoreId', stores[0]?._id);
       }
 
-
+      dispatch(setProducts(matchedStore?.products || []))
       return stores;
 
     } catch (error) {

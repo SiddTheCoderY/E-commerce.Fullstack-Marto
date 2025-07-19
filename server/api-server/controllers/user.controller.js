@@ -1,32 +1,33 @@
-import { ApiResponse } from '../utils/ApiResponse.js'
-import { ApiError } from '../utils/ApiError.js'
-import { uploadOnCloudinary } from '../utils/Cloudinary.js'
-import { User } from '../../shared/models/user.model.js'
-import { asyncHandler } from '../utils/asyncHandler.js'
-import crypto from 'crypto'
-import sendMail from '../utils/sendMail.js'
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { ApiError } from "../utils/ApiError.js";
+import { uploadOnCloudinary } from "../utils/Cloudinary.js";
+import { User } from "../../shared/models/user.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import crypto from "crypto";
+import sendMail from "../utils/sendMail.js";
 
 export const generateAccessAndRefreshToken = async (userId) => {
-    try {
-        const user = await User.findById(userId)
-        const accessToken = user.generateAccessToken()
-        const refreshToken = user.generateRefreshToken()
-      
-        user.refreshToken = refreshToken
-      
-        await user.save({ validateBeforeSave: false })
-        return { accessToken, refreshToken }
-      
-      } catch (err) {
-        throw new ApiError(err.status || 500, err.message)
-      }
-}
+  try {
+    const user = await User.findById(userId);
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
 
-export const registerUser = asyncHandler(async(req,res) => {
-  const { username, fullName, email, password } = req.body
-  
-  if ([username, fullName, email, password].some((field) => field?.trim() === '')) {
-    throw new ApiError(400,'All credenetials are required')
+    user.refreshToken = refreshToken;
+
+    await user.save({ validateBeforeSave: false });
+    return { accessToken, refreshToken };
+  } catch (err) {
+    throw new ApiError(err.status || 500, err.message);
+  }
+};
+
+export const registerUser = asyncHandler(async (req, res) => {
+  const { username, fullName, email, password } = req.body;
+
+  if (
+    [username, fullName, email, password].some((field) => field?.trim() === "")
+  ) {
+    throw new ApiError(400, "All credenetials are required");
   }
 
   const validateEmail = (email) => {
@@ -35,41 +36,41 @@ export const registerUser = asyncHandler(async(req,res) => {
   };
 
   if (!validateEmail(email)) {
-    throw new ApiError(400, 'Please provide a valid Gmail address');
+    throw new ApiError(400, "Please provide a valid Gmail address");
   }
-  
 
   const existedUser = await User.find({
-    $or: [{ username }, { email}]
-  })
+    $or: [{ username }, { email }],
+  });
 
   if (existedUser?.length > 0) {
-    throw new ApiError(400, 'username or email already taken')
+    throw new ApiError(400, "username or email already taken");
   }
 
-  const avatarLocalPath = req.file?.path
+  const avatarLocalPath = req.file?.path;
   let avatar;
-  if (avatarLocalPath) { 
-    const response = await uploadOnCloudinary(avatarLocalPath, 'avatars')
+  if (avatarLocalPath) {
+    const response = await uploadOnCloudinary(avatarLocalPath, "avatars");
     if (!response) {
-      throw new ApiError(500, 'Error occured while uploading the image')
+      throw new ApiError(500, "Error occured while uploading the image");
     }
-    avatar = response?.url
+    avatar = response?.url;
   }
-  
+
   const user = await User.create({
     username: username?.toLowerCase(),
     fullName: fullName,
     email: email?.toLowerCase(),
     password,
-    avatar : avatar || null
-  })
+    avatar: avatar || null,
+  });
 
-  
-  const createdUser = await User.findById(user?._id).select('-password -refreshToken')
-  
+  const createdUser = await User.findById(user?._id).select(
+    "-password -refreshToken"
+  );
+
   if (!createdUser) {
-    throw new ApiError(500, 'Error occured while registering the user')
+    throw new ApiError(500, "Error occured while registering the user");
   }
   // for email sending
   const otp = crypto.randomInt(100000, 999999).toString(); // 6-digit OTP
@@ -82,9 +83,9 @@ export const registerUser = asyncHandler(async(req,res) => {
   // 🔗 Create verification link and send mail
   const verificationLink = `${process.env.FRONTEND_URL}/verify-email?email=${user.email}&otp=${otp}`;
   await sendMail({
-  to: user.email,
-  subject: 'Verify your Email - Anbari',
-  html: `
+    to: user.email,
+    subject: "Verify your Email - Anbari",
+    html: `
   <div style="max-width:600px;margin:auto;font-family:'Segoe UI',sans-serif;background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
     <!-- Header with gradient, logo -->
     <div style="background:linear-gradient(135deg,#7C3AED,#3B82F6);padding:20px;text-align:center;color:white;">
@@ -98,7 +99,9 @@ export const registerUser = asyncHandler(async(req,res) => {
 
     <!-- Body content -->
     <div style="padding:30px;text-align:center;">
-      <p style="font-size:16px;color:#4B5563;">Hello <strong>${user.fullName}</strong>,</p>
+      <p style="font-size:16px;color:#4B5563;">Hello <strong>${
+        user.fullName
+      }</strong>,</p>
       <p style="font-size:15px;color:#6B7280;">Use the OTP below to verify your email address or click the button to verify directly.</p>
       <h2 style="margin:20px auto;font-size:28px;color:#7C3AED;background:#F3F4F6;padding:10px 20px;display:inline-block;border-radius:8px;">${otp}</h2>
       <a href="${verificationLink}" style="display:inline-block;margin-top:20px;background:#3B82F6;color:white;padding:12px 25px;text-decoration:none;border-radius:6px;font-weight:bold;">Verify Email</a>
@@ -123,126 +126,139 @@ export const registerUser = asyncHandler(async(req,res) => {
       <p style="margin-top:15px;font-size:12px;color:#9CA3AF;">&copy; ${new Date().getFullYear()} Anbari. All rights reserved.</p>
     </div>
   </div>
-  `
+  `,
   });
 
-  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id)
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    user._id
+  );
 
-    // cookie settings
+  // cookie settings
   const cookieOptions = {
-      httpOnly : true,
-      secure: true,
-      sameSite: "None",
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
-  }
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+  };
 
   return res
     .status(200)
-    .cookie('refreshToken', refreshToken, cookieOptions)
-    .cookie('accessToken', accessToken, cookieOptions)
-    .json(new ApiResponse(
-      200,
-      {
-        user: createdUser,
-        accessToken: accessToken,
-      },
-      'User Registered Successfully'
-  ))
-})
+    .cookie("refreshToken", refreshToken, cookieOptions)
+    .cookie("accessToken", accessToken, cookieOptions)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          user: createdUser,
+          accessToken: accessToken,
+        },
+        "User Registered Successfully"
+      )
+    );
+});
 
 export const loginUser = asyncHandler(async (req, res) => {
-  const { username, password, email } = req.body
+  const { username, password, email } = req.body;
 
-  if (!(username || email)) throw new ApiError(400,'Email or Username is required')
-  if(!password) throw new ApiError(400,'Password is required')
+  if (!(username || email))
+    throw new ApiError(400, "Email or Username is required");
+  if (!password) throw new ApiError(400, "Password is required");
 
   const user = await User.findOne({
-    $or : [{username},{email}]
-  })
+    $or: [{ username }, { email }],
+  });
 
   if (!user) {
-    throw new ApiError(404,'User does not exist')
+    throw new ApiError(404, "User does not exist");
   }
 
-  const isPasswordValid = await user.isPasswordCorrect(password)
-  
+  const isPasswordValid = await user.isPasswordCorrect(password);
+
   if (!isPasswordValid) {
-    throw new ApiError(401,'Password didnt Matched')
+    throw new ApiError(401, "Password didnt Matched");
   }
 
-  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id)
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    user._id
+  );
 
-  const loggedInUser = await User.findById(user._id).select('-password -refreshToken')
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
 
- // cookie settings
-    const options = {
-      httpOnly : true,
-      secure: true,
-      sameSite: "None",
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
-  }
-  
+  // cookie settings
+  const options = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+  };
+
   return res
     .status(200)
-    .cookie('refreshToken', refreshToken, options)
-    .cookie('accessToken', accessToken, options)
-    .json(new ApiResponse(
-      200,
-      {
-        user: loggedInUser,
-        accessToken: accessToken,
-      },
-      'User Logged in Successfully'
-  ))
-})
+    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          user: loggedInUser,
+          accessToken: accessToken,
+        },
+        "User Logged in Successfully"
+      )
+    );
+});
 
 export const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user?._id,
     {
-      $set : { refreshToken : undefined }
+      $set: { refreshToken: undefined },
     },
-    { new : true}
-  )
-  
+    { new: true }
+  );
+
   // cookie settings
   const options = {
-    httpOnly : true,
+    httpOnly: true,
     secure: true,
     sameSite: "None",
-    maxAge: 7 * 24 * 60 * 60 * 1000 
-}
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
 
   return res
     .status(200)
-    .clearCookie('accessToken',options)
-    .clearCookie('refreshToken', options)
-    .json(new ApiResponse(
-      200,
-      {
-        user : null,
-        accessToken : null
-      },
-      'User Logout Successfully'
-  ))
-})
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          user: null,
+          accessToken: null,
+        },
+        "User Logout Successfully"
+      )
+    );
+});
 
 export const promoteUserToSeller = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user?._id)
+  const user = await User.findById(req.user?._id);
 
   if (!user) {
-    throw new ApiError(400, 'User Not Found for promotion to seller')
+    throw new ApiError(400, "User Not Found for promotion to seller");
   }
 
-  user.role = 'seller' 
-  user.generateSellerId() // this method sets sellerId + isSeller
-  await user.save()
+  user.role = "seller";
+  user.generateSellerId(); // this method sets sellerId + isSeller
+  await user.save();
 
-    // 🔗 sending mail to greet user 
-    await sendMail({
-      to: user.email,
-      subject: 'Welcome to Anbari Marketplace — You’re Now a Seller!',
-      html: `
+  // 🔗 sending mail to greet user
+  await sendMail({
+    to: user.email,
+    subject: "Welcome to Anbari Marketplace — You’re Now a Seller!",
+    html: `
       <div style="max-width:600px;margin:auto;font-family:'Segoe UI',sans-serif;background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
         <!-- Header with gradient, logo -->
         <div style="background:linear-gradient(135deg,#7C3AED,#3B82F6);padding:20px;text-align:center;color:white;">
@@ -256,10 +272,14 @@ export const promoteUserToSeller = asyncHandler(async (req, res) => {
     
         <!-- Body content -->
         <div style="padding:30px;text-align:center;">
-          <p style="font-size:16px;color:#4B5563;">Hello <strong>${user.fullName}</strong>,</p>
+          <p style="font-size:16px;color:#4B5563;">Hello <strong>${
+            user.fullName
+          }</strong>,</p>
           <p style="font-size:15px;color:#6B7280;">Congratulations on becoming a seller on <strong>Anbari</strong>! 🎉</p>
           <p style="font-size:15px;color:#6B7280;">You’ve unlocked access to seller tools, product listings, and a growing customer base.</p>
-          <p style="margin: 20px 0; font-size:16px; color:#10B981;"><strong>Your Seller ID:</strong> ${user.sellerId}</p>
+          <p style="margin: 20px 0; font-size:16px; color:#10B981;"><strong>Your Seller ID:</strong> ${
+            user.sellerId
+          }</p>
           <a href="https://anbari.com/seller/dashboard" style="display:inline-block;margin-top:20px;background:#3B82F6;color:white;padding:12px 25px;text-decoration:none;border-radius:6px;font-weight:bold;">Go to Seller Dashboard</a>
           <p style="font-size:13px;color:#9CA3AF;margin-top:30px;">Need help getting started? Our seller support team is just one message away.</p>
         </div>
@@ -282,20 +302,40 @@ export const promoteUserToSeller = asyncHandler(async (req, res) => {
           <p style="margin-top:15px;font-size:12px;color:#9CA3AF;">&copy; ${new Date().getFullYear()} Anbari. All rights reserved.</p>
         </div>
       </div>
-      `
-    })
-    
+      `,
+  });
 
-  return res.status(200).json(
-    new ApiResponse(200, {user}, 'User Promoted to Seller')
-  )
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { user }, "User Promoted to Seller"));
+});
 
-})
+export const getCurrentUser = asyncHandler((req, res) => {
+  const user = req.user;
 
-export const getCurrentUser = asyncHandler((req,res) => {
-  const user = req.user
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { user }, "Current User Fetched Successfully"));
+});
 
-  return res.status(200).json(
-    new ApiResponse(200,{user},'Current User Fetched Successfully')
-  )
-})
+export const updateUserCredentials = asyncHandler(async (req, res) => {
+  const { phoneNumber, address, shippingAddress } = req.body;
+
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        phoneNumber,
+        address,
+        shippingAddress: shippingAddress || req.user.email,
+      },
+    },
+    { new: true }
+  );
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { user }, "User Credentials Updated Successfully")
+    );
+});

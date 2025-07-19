@@ -14,6 +14,7 @@ import { setProducts } from '../features/product/productSlice';
 import ProductCard from '../components/ProductCard';
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
+import { getAllProducts } from '../features/product/productThunks';
 
 
 export default function Store() {
@@ -25,7 +26,13 @@ export default function Store() {
   const { products, loading } = useSelector((state) => state.product)
   const { user } = useSelector((state) => state.user)
    
-  
+  console.log('Products at Store', products);
+
+  // useEffect(() => {
+  //   if(products.length <= 0){
+  //     dispatch(getAllProducts())
+  //   }
+  // },[products])
 
   useEffect(() => {
     if (!user) {

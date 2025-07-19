@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  Routes,
-  Route,
-  useLocation,
-} from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { getCurrentUser } from "./features/user/userThunks";
 import { useDispatch, useSelector } from "react-redux";
 import { Toaster } from "react-hot-toast";
@@ -30,7 +26,6 @@ import ProductPage from "./pages/ProductPage";
 import OrderPage from "./pages/OrderPage";
 import SalesReportPage from "./pages/SalesReportPage";
 import ProductShowcase from "./components/ProductShowCase";
-
 
 function App() {
   const location = useLocation();
@@ -194,6 +189,7 @@ function App() {
             path="/product/:productId"
             element={
               <PrivateRoute>
+                {/* <ProductShowcase isModal={true} product={state?.product} /> */}
                 <ProductShowcase isModal={true} />
               </PrivateRoute>
             }

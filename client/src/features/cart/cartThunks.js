@@ -52,7 +52,7 @@ export const getCartProducts = createAsyncThunk(
 
       const response = await axiosInstance.get("/cart/get-cart-products");
       const cartProducts = response.data.data;
-      console.log("Cart Products", cartProducts);
+      // console.log("Cart Products", cartProducts);
       dispatch(setCartProductsLength(cartProducts.length));
       dispatch(setCartProducts(cartProducts));
       

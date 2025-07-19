@@ -139,7 +139,11 @@ const storeSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref : 'Product'
     }
-  ]
+  ],
+  shippingTimeScore: {
+    type: Number,
+    default: 100
+  }
     
   }, { timestamps: true });
 
