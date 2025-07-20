@@ -2,6 +2,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { uploadOnCloudinary } from "../utils/Cloudinary.js";
 import { User } from "../../shared/models/user.model.js";
+import { Store } from "../../shared/models/store.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import crypto from "crypto";
 import sendMail from "../utils/sendMail.js";
@@ -338,4 +339,34 @@ export const updateUserCredentials = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(200, { user }, "User Credentials Updated Successfully")
     );
+});
+
+export const likeStore = asyncHandler(async (req, res) => {
+  const { storeId } = req.query;
+  if (!storeId) {
+    throw new ApiError(400, "Store ID is required");
+  }
+
+  const store = await Store.findById(storeId);
+  if (!store) {
+    throw new ApiError(404, "Store not found");
+  }
+
+  const userId = req.user._id;
+
+  const existingLikeIndex = store.likes.indexOf(userId);
+
+  if (existingLikeIndex !== -1) {
+    // User already liked -> unlike
+    store.likes.splice(existingLikeIndex, 1);
+  } else {
+    // Not liked yet -> like
+    store.likes.push(userId);
+  }
+
+  await store.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, store, "Store like toggled successfully"));
 });

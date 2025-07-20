@@ -6,8 +6,9 @@ import {
   createStore,
   updateStoreCredentials,
   getAllStore,
-  checkStoreName
-} from '../controllers/store.controller.js'
+  checkStoreName,
+  getStoreById,
+} from "../controllers/store.controller.js";
 
 
 const router = Router()
@@ -36,6 +37,8 @@ router.route('/update-store-credentials').post(
 router.route('/get-all-stores').get(verifyJWT, getAllStore)
 
 router.route('/check-store-name-availablity').post(checkStoreName)
+
+router.route('/get-store-by-id').get(verifyJWT, getStoreById)
 
 
 export default router

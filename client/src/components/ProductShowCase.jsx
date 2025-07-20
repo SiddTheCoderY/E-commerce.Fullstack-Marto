@@ -64,7 +64,7 @@ export default function ProductShowcase({ isModal = false, product = null }) {
     >
       <div className="bg-white px-4 pt-0 pb-4 rounded-xl shadow-xl w-[90%] h-[90%] overflow-y-auto">
         {/* Sticky Top Bar */}
-        <div className="sticky top-0 z-50 h-12 w-full bg-white/90 backdrop:backdrop-blur-2xl border-b border-gray-400 flex items-center justify-end pr-4">
+        <div className="sticky top-0 z-50 h-12 w-full bg-white/90 backdrop:backdrop-blur-2xl border-b border-gray-300 flex items-center justify-end pr-4">
           {isModal && (
             <button className="text-gray-700" onClick={handleClose}>
               <svg
@@ -93,7 +93,7 @@ export default function ProductShowcase({ isModal = false, product = null }) {
               <img
                 src={selectedImage}
                 alt="Product"
-                className="w-full h-96 object-cover rounded-lg border"
+                className="w-full h-96 object-cover rounded-lg border border-black/30"
               />
               <div className="flex mt-4 space-x-2 overflow-x-auto">
                 {images?.map((img, i) => (
@@ -113,7 +113,7 @@ export default function ProductShowcase({ isModal = false, product = null }) {
             {/* Details */}
             <div className="space-y-4">
               <h2 className="text-2xl font-semibold">{title}</h2>
-              <p className="text-gray-600">{description}</p>
+              <p className="text-gray-600 w-96 truncate">{description}</p>
 
               <div className="text-sm text-gray-700">
                 {features.map((feat, i) => (
@@ -143,7 +143,9 @@ export default function ProductShowcase({ isModal = false, product = null }) {
                 </span>
               </div>
 
-              <div className="text-sm text-gray-600">In Stock: {stock}</div>
+              <div className="text-sm text-gray-600">
+                In Stock: {stock > 0 ? <span className="text-green-800 font-semibold">Available</span> : <span className="text-red-600">Unavailable</span>}
+              </div>
 
               {/* Quantity */}
               <div className="flex items-center mt-2">
@@ -194,18 +196,18 @@ export default function ProductShowcase({ isModal = false, product = null }) {
 
           {/* Right side */}
 
-          <div className="w-full md:w-[40%] lg:w-[30%] bg-amber-800">
+          <div className="w-full md:w-[40%] lg:w-[30%]">
             <UserDetails product={selectedProduct} />
           </div>
         </div>
 
         {/* Bottom Bar */}
 
-        <div className="w-full bg-blue-200/10 p-4">
+        <div className="w-full  p-4">
           <ProductReviews />
         </div>
-        
-        <div className="w-full bg-blue-200/10 p-4">
+
+        <div className="w-full p-4">
           <ProductReviews />
         </div>
       </div>

@@ -26,6 +26,7 @@ import ProductPage from "./pages/ProductPage";
 import OrderPage from "./pages/OrderPage";
 import SalesReportPage from "./pages/SalesReportPage";
 import ProductShowcase from "./components/ProductShowCase";
+import PublicStore from "./pages/PublicStore";
 
 function App() {
   const location = useLocation();
@@ -175,6 +176,12 @@ function App() {
               <PrivateRoute>
                 <ProductShowcase />
               </PrivateRoute>
+            }
+          />
+          <Route
+            path="store/:storeId"
+            element={
+                <PublicStore />
             }
           />
         </Route>

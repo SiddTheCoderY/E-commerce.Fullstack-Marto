@@ -38,6 +38,12 @@ const userSchema = new mongoose.Schema(
     shippingAddress: {
       type: "String",
     },
+    likedStores: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Store",
+      },
+    ],
     verified: {
       type: Boolean,
       default: false,

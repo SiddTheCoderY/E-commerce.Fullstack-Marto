@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUserCredentials } from "../features/user/userThunks";
+import { Link } from "react-router-dom";
+
 import {
   Truck,
   Wallet,
@@ -29,18 +31,14 @@ export default function UserDetails({ product }) {
 
   const handleAddAddress = (e) => {
     e.preventDefault();
-    if (
-      [address, phoneNumber, shippingAddress].some(
-        (field) => field === ""
-      )
-    )
+    if ([address, phoneNumber, shippingAddress].some((field) => field === ""))
       return;
     dispatch(updateUserCredentials({ address, phoneNumber, shippingAddress }));
     setIsExpanded(false); // close the form after submit
   };
 
   return (
-    <div className="space-y-6 p-4 border rounded-lg shadow-sm bg-white w-full text-sm">
+    <div className="space-y-6 mt-8 p-4 border border-black/20 rounded-lg bg-white w-full text-sm flex flex-col">
       {/* Delivery Info */}
       <div>
         <h3 className="font-semibold text-lg mb-2">Delivery Options</h3>
@@ -94,7 +92,7 @@ export default function UserDetails({ product }) {
             <div className="flex justify-between items-start gap-2">
               <div className="space-y-1">
                 <p className="flex items-center gap-2">
-                  <MapPin size={16} /> {user.shippingAddress}
+                  <MapPin size={18} /> {user.shippingAddress}
                 </p>
                 <p className="flex items-center gap-2">
                   <Phone size={16} /> {user.phoneNumber}
@@ -130,6 +128,9 @@ export default function UserDetails({ product }) {
         </div>
       </div>
 
+      {/* Divider */}
+      <div className="border-t border-gray-300"></div>
+
       {/* Return & Warranty */}
       <div>
         <h3 className="font-semibold text-lg mb-2">Return & Warranty</h3>
@@ -141,6 +142,9 @@ export default function UserDetails({ product }) {
           {product.warranty ? "Warranty Available" : "No Warranty"}
         </p>
       </div>
+
+      {/* Divider */}
+      <div className="border-t border-gray-300"></div>
 
       {/* Seller Info */}
       <div>
@@ -157,12 +161,21 @@ export default function UserDetails({ product }) {
         </p>
       </div>
 
+      {/* Divider */}
+      <div className="border-t border-gray-300"></div>
+
       {/* Store Link */}
-      <div className="text-center">
-        <button className="flex items-center gap-1 mx-auto text-blue-600 hover:underline hover:text-blue-700 transition">
+      <div className="text-center w-full flex justify-center">
+        <Link
+          to={`/store/${product?.store?._id}`}
+          className="flex items-center gap-1 mx-auto text-blue-600 hover:underline hover:text-blue-700 transition"
+        >
           Go to Store <ExternalLink size={14} />
-        </button>
+        </Link>
       </div>
+
+      {/* Divider */}
+      <div className="border-t border-gray-300"></div>
     </div>
   );
 }
