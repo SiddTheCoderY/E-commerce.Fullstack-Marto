@@ -36,6 +36,27 @@ router.route('/verify-user').get(verifyJWT, (req, res) => {
     })
 })
 
+router.route('/verify-visit-to-seller-dashboard').post(verifyJWT, authorizeRoles('seller'), async(req, res) => {
+  try {
+    const user = req.user
+    user.isDashboardVisited = true
+    await user.save({ validateBeforeSave: false })
+    return res.status(200).json({
+      success: true,
+      user,
+      message: 'User is authenticated',
+      isAuthenticated: true
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+      isAuthenticated: false
+    })
+    
+  }
+})
+
 
 
 export default router  

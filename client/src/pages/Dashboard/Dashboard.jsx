@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import axiosInstance from "../../utils/axiosInstance";
 import {
   Chart as ChartJS,
   LineElement,
@@ -145,22 +146,40 @@ const topCustomers = [
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../features/user/userSlice";
 
 export default function Dashboard() {
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { user } = useSelector((state) => state.user)
+  const { user } = useSelector((state) => state.user);
 
   useEffect(() => {
-    
     if (!user || user.role !== "seller") {
       toast.error("Become a seller to access dashboard");
       navigate("/");
     }
   }, [user]);
-  
-  
+
+  const verifyDashvoardVisit = async () => {
+    try {
+      const response = await axiosInstance.post(
+        "/user/verify-visit-to-seller-dashboard"
+      );
+      console.log(response);
+      dispatch(setUser(response.data.user));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    console.log("Dashboard");
+    verifyDashvoardVisit();
+    console.log("Dashboard visited");
+  }, []);
+
   return (
     <div className="flex-1 bg-[#e4e7eb] p-6 min-h-screen">
       {/* Top Header */}
@@ -175,11 +194,7 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-4">
           <Sun className="text-gray-500 h-5 w-5 cursor-pointer" />
-          <img
-            src={user?.avatar}
-            className="rounded-full h-8 w-8"
-            alt="user"
-          />
+          <img src={user?.avatar} className="rounded-full h-8 w-8" alt="user" />
         </div>
       </div>
 
@@ -187,7 +202,10 @@ export default function Dashboard() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-xl font-semibold text-gray-800">
-            Welcome Back, <span className="highlight-tilt p-[1.5px] text-white">{user?.fullName}</span>
+            Welcome Back,{" "}
+            <span className="highlight-tilt p-[1.5px] text-white">
+              {user?.fullName}
+            </span>
           </h1>
           <p className="text-sm text-gray-500">
             Here's what happening with your store today
@@ -254,7 +272,9 @@ export default function Dashboard() {
 
         <div className="bg-white/60 backdrop-blur-[3px] p-5 rounded-xl shadow-sm">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-gray-800">Most Selling Products</h3>
+            <h3 className="font-semibold text-gray-800">
+              Most Selling Products
+            </h3>
             <MoreVertical className="h-4 w-4 text-gray-500" />
           </div>
           <ul className="space-y-4">
@@ -315,7 +335,9 @@ export default function Dashboard() {
 
         <div className="bg-white/60 backdrop-blur-[3px] p-5 rounded-xl shadow-sm">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-gray-800">Weekly Top Customers</h3>
+            <h3 className="font-semibold text-gray-800">
+              Weekly Top Customers
+            </h3>
             <MoreVertical className="h-4 w-4 text-gray-500" />
           </div>
           <ul className="space-y-4">
@@ -329,7 +351,9 @@ export default function Dashboard() {
                   />
                   <div>
                     <div className="text-sm font-medium">{c.name}</div>
-                    <div className="text-xs text-gray-400">{c.orders} Orders</div>
+                    <div className="text-xs text-gray-400">
+                      {c.orders} Orders
+                    </div>
                   </div>
                 </div>
                 <button className="text-xs text-blue-600 font-medium">
@@ -355,8 +379,6 @@ export default function Dashboard() {
         }
       `}
       </style>
-
     </div>
   );
-
 }

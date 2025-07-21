@@ -245,12 +245,9 @@ export const logoutUser = asyncHandler(async (req, res) => {
 });
 
 export const promoteUserToSeller = asyncHandler(async (req, res) => {
+  const { address, phoneNumber, age } = req.body;
 
-  const { address, phoneNumber, age } = req.body
-
-  if (
-    [address, phoneNumber, age].some((field) => field?.trim() === "")
-  ) {
+  if ([address, phoneNumber, age].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "All credenetials are required");
   }
 
@@ -264,12 +261,12 @@ export const promoteUserToSeller = asyncHandler(async (req, res) => {
     throw new ApiError(400, "User is already a seller");
   }
 
-
   user.age = age;
   user.phoneNumber = phoneNumber;
   user.address = address;
 
   user.role = "seller";
+  user.isSeller = true;
   user.generateSellerId(); // this method sets sellerId + isSeller
   await user.save();
 
@@ -340,7 +337,6 @@ export const getCurrentUser = asyncHandler((req, res) => {
 export const updateUserCredentials = asyncHandler(async (req, res) => {
   const { phoneNumber, address, shippingAddress } = req.body;
 
-
   const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
@@ -358,4 +354,3 @@ export const updateUserCredentials = asyncHandler(async (req, res) => {
       new ApiResponse(200, { user }, "User Credentials Updated Successfully")
     );
 });
-
