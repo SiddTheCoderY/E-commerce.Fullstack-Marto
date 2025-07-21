@@ -26,6 +26,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    age: {
+      type: Number,
+    },
     avatar: {
       type: String,
     },
@@ -83,6 +86,10 @@ const userSchema = new mongoose.Schema(
     sellerId: {
       type: String,
       default: null,
+    },
+    isDashboardVisited: {
+      type: Boolean,
+      default: false,
     },
     refreshToken: {
       type: String,

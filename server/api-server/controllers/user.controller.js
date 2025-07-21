@@ -245,11 +245,29 @@ export const logoutUser = asyncHandler(async (req, res) => {
 });
 
 export const promoteUserToSeller = asyncHandler(async (req, res) => {
+
+  const { address, phoneNumber, age } = req.body
+
+  if (
+    [address, phoneNumber, age].some((field) => field?.trim() === "")
+  ) {
+    throw new ApiError(400, "All credenetials are required");
+  }
+
   const user = await User.findById(req.user?._id);
 
   if (!user) {
     throw new ApiError(400, "User Not Found for promotion to seller");
   }
+
+  if (user.role === "seller") {
+    throw new ApiError(400, "User is already a seller");
+  }
+
+
+  user.age = age;
+  user.phoneNumber = phoneNumber;
+  user.address = address;
 
   user.role = "seller";
   user.generateSellerId(); // this method sets sellerId + isSeller

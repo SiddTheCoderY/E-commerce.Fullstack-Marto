@@ -27,7 +27,7 @@ import OrderPage from "./pages/OrderPage";
 import SalesReportPage from "./pages/SalesReportPage";
 import ProductShowcase from "./components/ProductShowCase";
 import PublicStore from "./pages/PublicStore";
-import BecomeSeller from "./pages/BecomeSeller/BecomeSeller";
+import BecomeSeller from "./pages/BecomeSeller/BecomeSellerLanderPage";
 
 function App() {
   const location = useLocation();

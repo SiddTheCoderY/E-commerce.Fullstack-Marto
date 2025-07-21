@@ -38,3 +38,20 @@ export const updateUserCredentials = createAsyncThunk(
     }
   }
 );
+
+export const promoteUserToSeller = createAsyncThunk(
+  "user/promoteUserToSeller",
+  async (data, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await axiosInstance.post("/user/promote-user-to-seller", data);
+      console.log("User Credentails updated successgully", response.data.data);
+      dispatch(setUser(response.data.data.user));
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }
+);
