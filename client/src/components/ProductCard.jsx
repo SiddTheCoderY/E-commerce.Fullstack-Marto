@@ -23,9 +23,8 @@ const ProductCard = ({ loading, product }) => {
   const { screenView } = useSelector((state) => state.localState);
   const { cartProducts } = useSelector((state) => state.cart);
 
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
   const [wishlist, setWishlist] = useState({});
-  const [cartStatus, setCartStatus] = useState({});
 
   useEffect(() => {
     if (user?.wishListProducts?.length) {
@@ -35,16 +34,6 @@ const ProductCard = ({ loading, product }) => {
     }
   }, [user]);
 
-  useEffect(() => {
-    if (cartProducts?.length) {
-      const initial = {};
-      cartProducts.forEach((item) => {
-        initial[item.product?._id?.toString()] = true;
-      });
-      setCartStatus(initial);
-    }
-  }, [cartProducts]);
-
   const toggleWishlist = async (productId) => {
     setWishlist((prev) => ({ ...prev, [productId]: !prev[productId] }));
     try {
@@ -53,7 +42,6 @@ const ProductCard = ({ loading, product }) => {
   };
 
   const toggleCart = async (productId) => {
-    setCartStatus((prev) => ({ ...prev, [productId]: !prev[productId] }));
     try {
       await dispatch(toggleProductToCart({ productId })).unwrap();
     } catch (error) {
@@ -105,6 +93,7 @@ const ProductCard = ({ loading, product }) => {
 
   const display = !loading && product;
 
+
   return (
     <div
       className={`relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-black/40 p-2 max-w-xs ${
@@ -119,7 +108,7 @@ const ProductCard = ({ loading, product }) => {
             } overflow-hidden rounded-md mb-2 group`}
           >
             <img
-              src={product.images[currentImageIndex]}
+              src={product.images[0]}
               alt={product.title}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
@@ -194,18 +183,29 @@ const ProductCard = ({ loading, product }) => {
                     }
                   }}
                   className={`group flex items-center gap-1 rounded-full px-2 py-1 h-7 text-white text-[11px] transition-all duration-300 cursor-pointer ${
-                    cartStatus[product._id?.toString()]
+                    cartProducts.some(
+                      (item) =>
+                        item.product?.toString() === product._id.toString()
+                    )
                       ? "bg-blue-600"
-                      : "bg-blue-900 hover:bg-blue-800"
+                      : "bg-gradient-to-bl from-blue-400 to-blue-800 hover:from-blue-800 hover:to-blue-700"
                   }`}
                 >
-                  {cartStatus[product._id?.toString()] ? (
+                  {cartProducts.some(
+                    (item) =>
+                      item.product?._id?.toString() === product._id.toString()
+                  ) ? (
                     <CheckCircle size={14} />
                   ) : (
                     <ShoppingCart size={14} />
                   )}
                   <span className="hidden sm:inline">
-                    {cartStatus[product._id?.toString()] ? "Added" : "Add"}
+                    {cartProducts.some(
+                      (item) =>
+                        item.product?._id?.toString() === product._id.toString()
+                    )
+                      ? "Added"
+                      : "Add"}
                   </span>
                 </button>
               ) : (

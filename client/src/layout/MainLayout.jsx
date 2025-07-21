@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import MobileMenuBar from "../components/MobileMenuBar";
 import { setScreenView } from "../features/localState/localStateSlice";
+import LoaderModal from "../components/LoaderModal";
 
 const MainLayout = () => {
   const dispatch = useDispatch();
@@ -23,7 +24,7 @@ const MainLayout = () => {
 
   
 
-  if (loading) return <h1>Loading...</h1>;
+  if (loading) return <LoaderModal />;
 
   // Sidebar width depends on collapse state
   const sidebarWidth = isSideBarCollapsed ? 75 : 250;

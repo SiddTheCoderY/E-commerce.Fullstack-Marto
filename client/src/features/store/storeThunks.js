@@ -35,7 +35,6 @@ export const getAllStores = createAsyncThunk(
         localStorage.setItem("selectedStoreId", stores[0]?._id);
       }
 
-      dispatch(setProducts(matchedStore?.products || []));
       return stores;
     } catch (error) {
       console.log("err at geting store", error);
@@ -97,9 +96,9 @@ export const getStoreById = createAsyncThunk(
         `/store/get-store-by-id?storeId=${id}`
       );
       const store = response.data.data;
-      console.log("Store By Id", store);
+      // console.log("Store By Id", store);
       dispatch(setCurrentStore(store));
-      dispatch(setProducts(store?.products || []));
+
       return store;
     } catch (error) {
       console.log("err at getting store by id", error);
@@ -110,6 +109,32 @@ export const getStoreById = createAsyncThunk(
         )
       );
       return rejectWithValue(error.response?.data || error.message);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }
+);
+
+export const toggleStoreLike = createAsyncThunk(
+  "store/likeStore",
+  async (id, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await axiosInstance.post(
+        `/store/like-store?storeId=${id}`
+      );
+      const store = response.data.data;
+      dispatch(setCurrentStore(store));
+
+      return store;
+    } catch (error) {
+      console.log("err at liking store by id", error);
+      dispatch(
+        setError(
+          error.response?.data?.message ||
+            "Error occurred while liking the store"
+        )
+      );
     } finally {
       dispatch(setLoading(false));
     }

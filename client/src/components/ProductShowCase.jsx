@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import UserDetails from "./UserDetails";
 import ProductReviews from "./ProductReviews";
 
+
 export default function ProductShowcase({ isModal = false, product = null }) {
   const { productId } = useParams();
   const navigate = useNavigate();

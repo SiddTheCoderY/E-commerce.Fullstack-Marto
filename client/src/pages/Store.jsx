@@ -30,7 +30,8 @@ export default function Store() {
   const [storeCreatemodalOpen, setStoreCreateModalOpen] = useState(false);
   const [productCreatemodalOpen, setProductCreateModalOpen] = useState(false);
   const { stores, currentStore } = useSelector((state) => state.store);
-  const { products, loading } = useSelector((state) => state.product);
+  const { loading } = useSelector((state) => state.product);
+  const products = currentStore?.products || [];
   const { user } = useSelector((state) => state.user);
 
   console.log("Products at Store", products);
@@ -53,7 +54,6 @@ export default function Store() {
     } else {
       localStorage.setItem("selectedStoreId", selectedStore._id);
       dispatch(setCurrentStore(selectedStore));
-      dispatch(setProducts(selectedStore.products));
     }
   };
 
@@ -135,7 +135,13 @@ export default function Store() {
           <div className="relative group">
             {/* The main box */}
             <div
-              onClick={(e) => setProductCreateModalOpen(true)}
+              onClick={(e) => {
+                if (stores.length === 0) {
+                  toast.error("Create a store first");
+                } else {
+                  setProductCreateModalOpen(true);
+                }
+              }}
               className="hover:bg-blue-500 hover:text-blue-50 bg-blue-100 text-black rounded-md p-2 flex items-center justify-center"
             >
               <Box size={20} />

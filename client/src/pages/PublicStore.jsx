@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import PageBacker from "../components/PageBacker";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllStores, getStoreById } from "../features/store/storeThunks";
-import { setCurrentStore } from "../features/store/storeSlice";
-import { Listbox } from "@headlessui/react";
+import {
+  getAllStores,
+  getStoreById,
+  toggleStoreLike,
+} from "../features/store/storeThunks";
+
 import {
   ChevronDown,
   Container,
@@ -14,16 +17,13 @@ import {
   Box,
   ThumbsUp,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import CreateStoreModal from "../components/CreateStoreModal";
+
+import LikeAnimation from "../assets/like.json";
 import Lottie from "lottie-react";
-import CreateNewAnimated from "../assets/create-new-animated-logo.json";
-import CreateProductModal from "../components/CreateProductModal";
-import { setProducts } from "../features/product/productSlice";
+
 import ProductCard from "../components/ProductCard";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import Store from "./Store";
 
 export default function PublicStore() {
   const storeId = window.location.pathname.split("/")[2];
@@ -32,12 +32,28 @@ export default function PublicStore() {
   const dispatch = useDispatch();
 
   const { currentStore } = useSelector((state) => state.store);
-  const { products, loading } = useSelector((state) => state.product);
+  const products = currentStore?.products;
   const { user } = useSelector((state) => state.user);
-  console.log("User", user);
+
+  const HandleToggleStoreLike = () => {
+    if (user) {
+      dispatch(toggleStoreLike(storeId));
+    } else {
+      toast.error("Please login to like a store");
+    }
+  };
+
   useEffect(() => {
     dispatch(getStoreById(storeId));
   }, [dispatch, storeId]);
+
+  const [likeBtnClicked, setLikeBtnClicked] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLikeBtnClicked(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [likeBtnClicked]);
 
   return (
     <div className="h-full w-full flex flex-col bg-slate-100/10">
@@ -73,14 +89,58 @@ export default function PublicStore() {
               <span>{currentStore?.likes?.length || 0} Likes</span>
             </div>
           </div>
-          <div className="p-2 rounded-md text-[13px] text-back cursor-pointer highlight-tilt text-white  transition-all duration-100 ease-in md:mr-10">
+          {/* Like -- Customize */}
+          <div
+            className={`p-2 rounded-md text-[13px] text-back cursor-pointer ${
+              likeBtnClicked ? "" : "bg-blue-400"
+            } text-white  transition-all duration-100 ease-in md:mr-10`}
+          >
             {currentStore?.owner === user._id ? (
               "Customize"
+            ) : currentStore?.likes?.includes(user._id) ? (
+              <div
+                onClick={() => {
+                  HandleToggleStoreLike();
+                  // setLikeBtnClicked(!likeBtnClicked);
+                }}
+                className="flex gap-1 items-center justify-center"
+              >
+                {likeBtnClicked ? (
+                  <Lottie
+                    animationData={LikeAnimation}
+                    loop={true}
+                    className="w-18"
+                  />
+                ) : (
+                  <>
+                    <ThumbsUp
+                      className="w-4 h-4 fill-blue-200"
+                      onClick={() => {
+                        HandleToggleStoreLike();
+                        // setLikeBtnClicked(!likeBtnClicked);
+                      }}
+                    />
+                    <span>Liked</span>
+                  </>
+                )}
+              </div>
             ) : (
-              <span className="flex items-center gap-1">
-                <ThumbsUp className="w-4 h-4" />
-                <span>Like</span>
-              </span>
+              <div
+                onClick={() => {
+                  HandleToggleStoreLike();
+                  setLikeBtnClicked(!likeBtnClicked);
+                }}
+                className="flex gap-1 items-center justify-center"
+              >
+                <ThumbsUp
+                  className="w-4 h-4"
+                  onClick={() => {
+                    HandleToggleStoreLike();
+                    setLikeBtnClicked(!likeBtnClicked);
+                  }}
+                />
+                <span className="text-white text-[14px]">Like</span>
+              </div>
             )}
           </div>
         </div>
@@ -100,9 +160,9 @@ export default function PublicStore() {
                 .reverse()
                 .map((product) => (
                   <ProductCard
-                    key={product._id}
+                    key={Date.now() + Math.random()}
                     product={product}
-                    loading={loading}
+                    loading={false}
                   />
                 ))}
           </div>

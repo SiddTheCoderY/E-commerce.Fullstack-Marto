@@ -6,7 +6,7 @@ import {
   setLoading,
   setError,
   setSuccess,
-  setHasFetched
+  setHasFetched,
 } from "./cartSlice";
 
 export const toggleProductToCart = createAsyncThunk(
@@ -21,18 +21,21 @@ export const toggleProductToCart = createAsyncThunk(
       );
 
       const newProducts = response.data.data.cartItems.items;
+      // console.log("newProducts", newProducts);
       const toggledProduct = response.data.data.toggleProduct;
 
-      const {cartProducts} = getState().cart;
-      
-      const filteredProducts = cartProducts?.filter(
-        (item) => item.product._id !== toggledProduct._id
-      );
+      const { cartProducts } = getState().cart;
 
-      dispatch(setCartProducts(filteredProducts));
-      
+      const filteredProducts = cartProducts.filter(
+        (product) => product._id !== toggledProduct._id
+      );
+      // console.log("filteredProducts", filteredProducts);
+      // const newProducts = [...filteredProducts, toggledProduct];
+
+      dispatch(setCartProducts(newProducts));
+
       dispatch(setCartProductsLength(newProducts.length));
-      dispatch(setHasFetched(true))
+      dispatch(setHasFetched(true));
 
       return newProducts;
     } catch (error) {
@@ -55,7 +58,6 @@ export const getCartProducts = createAsyncThunk(
       // console.log("Cart Products", cartProducts);
       dispatch(setCartProductsLength(cartProducts.length));
       dispatch(setCartProducts(cartProducts));
-      
 
       return cartProducts;
     } catch (error) {
@@ -77,7 +79,7 @@ export const updateCartProductCount = createAsyncThunk(
         { productId, number }
       );
 
-      console.log("Updated Cart",response.data.data);
+      console.log("Updated Cart", response.data.data);
       dispatch(setCartProducts(response.data.data));
       dispatch(setSuccess(response.data.data));
       return response.data.data;

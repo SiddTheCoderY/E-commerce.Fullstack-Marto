@@ -341,32 +341,3 @@ export const updateUserCredentials = asyncHandler(async (req, res) => {
     );
 });
 
-export const likeStore = asyncHandler(async (req, res) => {
-  const { storeId } = req.query;
-  if (!storeId) {
-    throw new ApiError(400, "Store ID is required");
-  }
-
-  const store = await Store.findById(storeId);
-  if (!store) {
-    throw new ApiError(404, "Store not found");
-  }
-
-  const userId = req.user._id;
-
-  const existingLikeIndex = store.likes.indexOf(userId);
-
-  if (existingLikeIndex !== -1) {
-    // User already liked -> unlike
-    store.likes.splice(existingLikeIndex, 1);
-  } else {
-    // Not liked yet -> like
-    store.likes.push(userId);
-  }
-
-  await store.save();
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, store, "Store like toggled successfully"));
-});

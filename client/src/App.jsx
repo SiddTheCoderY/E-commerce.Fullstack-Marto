@@ -10,7 +10,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import GoogleCallback from "./pages/Oauth-pages/GoogleCallback";
 
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard/Dashboard";
 import WishList from "./pages/WishList";
 import MessagePage from "./pages/MessagePage";
 import SettingLayout from "./pages/Setting/SettingLayout";
@@ -27,6 +27,7 @@ import OrderPage from "./pages/OrderPage";
 import SalesReportPage from "./pages/SalesReportPage";
 import ProductShowcase from "./components/ProductShowCase";
 import PublicStore from "./pages/PublicStore";
+import BecomeSeller from "./pages/BecomeSeller/BecomeSeller";
 
 function App() {
   const location = useLocation();
@@ -92,6 +93,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/oauth/google/callback" element={<GoogleCallback />} />
+
+        <Route path="become-seller" element={<BecomeSeller />} />
 
         {/* App routes inside main layout */}
         <Route path="/" element={<MainLayout />}>
@@ -168,6 +171,23 @@ function App() {
               </PrivateRoute>
             }
           />
+          <Route
+            path="dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="become-seller"
+            element={
+              <PrivateRoute>
+                <BecomeSeller />
+              </PrivateRoute>
+            }
+          />
 
           {/* Non-modal fallback (e.g. direct visit to /product/123) */}
           <Route
@@ -178,12 +198,7 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route
-            path="store/:storeId"
-            element={
-                <PublicStore />
-            }
-          />
+          <Route path="store/:storeId" element={<PublicStore />} />
         </Route>
 
         <Route path="*" element={<PageNotFound />} />

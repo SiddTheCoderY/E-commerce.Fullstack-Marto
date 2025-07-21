@@ -8,6 +8,7 @@ import {
   getAllStore,
   checkStoreName,
   getStoreById,
+  likeStore
 } from "../controllers/store.controller.js";
 
 
@@ -40,5 +41,6 @@ router.route('/check-store-name-availablity').post(checkStoreName)
 
 router.route('/get-store-by-id').get(verifyJWT, getStoreById)
 
+router.route("/like-store").post(verifyJWT, likeStore);
 
 export default router

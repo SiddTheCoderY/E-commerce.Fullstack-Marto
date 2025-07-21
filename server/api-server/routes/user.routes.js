@@ -8,7 +8,7 @@ import {
   logoutUser,
   promoteUserToSeller,
   getCurrentUser,
-  updateUserCredentials
+  updateUserCredentials,
  } from "../controllers/user.controller.js";
 
 const router = Router()
@@ -24,6 +24,7 @@ router.route('/get-current-user').get(verifyJWT,getCurrentUser)
 
 
 router.route('/update-user-credentials').post(verifyJWT,updateUserCredentials)
+
 
 
 //for private route check (in frontend)

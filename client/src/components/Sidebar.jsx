@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink,Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../features/auth/authThunks";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +21,7 @@ import {
   AlignJustify,
   Slack,
   Speech,
+  Home,
 } from "lucide-react";
 
 import Lottie from "lottie-react";
@@ -60,19 +61,18 @@ const Sidebar = () => {
   }, []);
 
   const baseLinks = [
-    { to: "/", icon: LayoutDashboard, label: "Home" },
+    { to: "/", icon: Home, label: "Home" },
     { to: "/cart", icon: ShoppingBag, label: "Cart" },
     { to: "/wishlist", icon: Heart, label: "Wishlist" },
-    { to: "/orders", icon: ShoppingCart, label: "Orders" },
     { to: "/messages", icon: MessageCircle, label: "Messages" },
   ];
 
   const sellerLinks = [
-    { to: "/leaderboard", icon: Trophy, label: "Leaderboard" },
     { to: "/orders", icon: ShoppingCart, label: "Orders" },
     { to: "/products", icon: Box, label: "Products" },
     { to: "/stores", icon: Store, label: "Stores" },
     { to: "/sales-report", icon: BarChart2, label: "Sales Report" },
+    { to: "/leaderboard", icon: Trophy, label: "Leaderboard" },
   ];
 
   const navItems =
@@ -171,8 +171,10 @@ const Sidebar = () => {
         {/* Bottom Section */}
         <div className="px-4 py-2 border-t border-gray-200 mb-3">
           <div className="flex flex-col gap-2">
+
+            {/* Become Seller */}
             {user && user.role === "consumer" && (
-              <div className=" cursor-pointer group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-red-50 transition-colors relative">
+              <Link to="/become-seller" className=" cursor-pointer group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-red-50 transition-colors relative">
                 <Speech className="w-[18px] h-[18px]" />
                 {isOpen ? (
                   <span>Become Seller</span>
@@ -181,9 +183,33 @@ const Sidebar = () => {
                     Become Seller
                   </span>
                 )}
-              </div>
+              </Link>
             )}
 
+            {/* Dashboard */}
+            {user && user.role === "seller" && (
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                  `group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors relative ${
+                    isActive
+                      ? "bg-blue-100 text-blue-600"
+                      : "text-gray-700 hover:text-blue-600 hover:bg-gray-100"
+                  }`
+                }
+              >
+                <Dashboard className="w-[18px] h-[18px]" />
+                {isOpen ? (
+                  <span>Dashboard</span>
+                ) : (
+                  <span className="absolute left-full ml-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                    Dashboard
+                  </span>
+                )}
+              </NavLink>
+            )}
+
+            {/* Settings */}
             <NavLink
               to="/settings"
               className={({ isActive }) =>
@@ -204,6 +230,7 @@ const Sidebar = () => {
               )}
             </NavLink>
 
+            {/* Logout */}
             {user && (
               <div
                 onClick={() => setIsLogoutConfirmerOn(true)}
