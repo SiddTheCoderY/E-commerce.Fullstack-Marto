@@ -20,9 +20,21 @@ function Cart() {
       <header className="bg-slate-100/10 shadow-md pl-4 flex justify-between items-center h-14 w-full pr-5 py-4 sticky top-0 z-50">
         <PageBacker />
 
-        <span className="bg-blue-400 hover:bg-blue-500 transition-all duration-150 ease-in py-2 px-4 rounded-md cursor-pointer text-sm flex items-center gap-1 hover:gap-3 text-white">
-          <Omega className="w-4 h-4" /> Buy Now
-        </span>
+        <div className="flex justify-center items-center gap-4">
+          <span>
+            Total : Rs{" "}
+            <span className="font-bold">
+              {cartProducts?.reduce((acc, item) => acc + item.product.price, 0)}
+            </span>
+          </span>
+
+          {/* Divider */}
+          <div className="h-5 w-0.5 bg-blue-400 rounded-full"></div>
+
+          <span className="bg-blue-400 hover:bg-blue-500 transition-all duration-150 ease-in py-2 px-4 rounded-md cursor-pointer text-sm flex items-center gap-1 hover:gap-3 text-white">
+            <Omega className="w-4 h-4" /> Buy Now
+          </span>
+        </div>
       </header>
 
       {/* Main Content */}
@@ -34,9 +46,9 @@ function Cart() {
         </h1>
         <AnimatePresence>
           {cartProducts?.length > 0 ? (
-            [...cartProducts].reverse().map((item) => (
-              <CartItem key={item._id} item={item} />
-            ))
+            [...cartProducts]
+              .reverse()
+              .map((item) => <CartItem key={item._id} item={item} />)
           ) : (
             <motion.p
               initial={{ opacity: 0 }}

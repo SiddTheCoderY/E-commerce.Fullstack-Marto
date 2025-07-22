@@ -4,7 +4,7 @@ import { getProductById } from "../features/product/productThunks";
 import { useSelector, useDispatch } from "react-redux";
 import UserDetails from "./UserDetails";
 import ProductReviews from "./ProductReviews";
-
+import { toggleProductToCart } from "../features/cart/cartThunks";
 
 export default function ProductShowcase({ isModal = false, product = null }) {
   const { productId } = useParams();
@@ -145,7 +145,14 @@ export default function ProductShowcase({ isModal = false, product = null }) {
               </div>
 
               <div className="text-sm text-gray-600">
-                In Stock: {stock > 0 ? <span className="text-green-800 font-semibold">Available</span> : <span className="text-red-600">Unavailable</span>}
+                In Stock:{" "}
+                {stock > 0 ? (
+                  <span className="text-green-800 font-semibold">
+                    Available
+                  </span>
+                ) : (
+                  <span className="text-red-600">Unavailable</span>
+                )}
               </div>
 
               {/* Quantity */}
@@ -178,6 +185,7 @@ export default function ProductShowcase({ isModal = false, product = null }) {
                 </button>
                 {isProductInCart ? (
                   <button
+                    onClick={() => dispatch(toggleProductToCart({ productId }))}
                     className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer px-5 py-2 rounded"
                     // onClick={handleRemoveFromCart}
                   >
@@ -186,7 +194,7 @@ export default function ProductShowcase({ isModal = false, product = null }) {
                 ) : (
                   <button
                     className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded"
-                    // onClick={handleAddToCart}
+                    onClick={() => dispatch(toggleProductToCart({ productId }))}
                   >
                     Add to Cart
                   </button>

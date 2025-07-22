@@ -63,13 +63,13 @@ const Sidebar = () => {
   const baseLinks = [
     { to: "/", icon: Home, label: "Home" },
     { to: "/cart", icon: ShoppingBag, label: "Cart" },
+    { to: "/products", icon: Box, label: "Products" },
     { to: "/wishlist", icon: Heart, label: "Wishlist" },
     { to: "/messages", icon: MessageCircle, label: "Messages" },
   ];
 
   const sellerLinks = [
     { to: "/orders", icon: ShoppingCart, label: "Orders" },
-    { to: "/products", icon: Box, label: "Products" },
     { to: "/stores", icon: Store, label: "Stores" },
     { to: "/sales-report", icon: BarChart2, label: "Sales Report" },
     { to: "/leaderboard", icon: Trophy, label: "Leaderboard" },
